@@ -74,8 +74,8 @@ interface IDashboardDataTable {
 }
 
 export const DashboardDataTable = ({
-columns,
-tableData
+columns= [],
+tableData = []
 }: IDashboardDataTable) => {
   const [data, setData] = React.useState(() => [...tableData])
   const rerender = React.useReducer(() => ({}), {})[1]

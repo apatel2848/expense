@@ -35,6 +35,7 @@ const EDIT_SUCCESS = "Receipt was successfully updated!";
 const EDIT_ERROR = "Receipt was not successfully updated!";
 const DELETE_SUCCESS = "Receipt successfully deleted!";
 const DELETE_ERROR = "Receipt not successfully deleted!";
+ 
 
 // Enum to represent different states of receipts
 export const RECEIPTS_ENUM = Object.freeze({
@@ -65,9 +66,7 @@ export default function Dashboard() {
   const [isLoadingReceipts, setIsLoadingReceipts] = useState(true);
   const [deleteReceiptId, setDeleteReceiptId] = useState("");
   const [deleteReceiptImageBucket, setDeleteReceiptImageBucket] = useState(""); 
-  const [receipts, setReceipts] = useState();
-  const [receiptColumns, setReceiptColumns] = useState();
-  const [receiptData, setReceiptData] = useState();
+  const [receipts, setReceipts] = useState(); 
   const [updateReceipt, setUpdateReceipt] = useState({});
 
   // State involved in snackbar
@@ -93,18 +92,7 @@ export default function Dashboard() {
 
   useEffect(async () => {
     if (authUser) {
-      setReceipts(await getReceipts(authUser.uid))  
-      var data = getReceiptFromJson(authUser.uid)
-      var tableColumns = []
-      var columnHeaders = Object.keys(data.header)
-      columnHeaders.forEach((e)=>{
-        tableColumns.push({
-          id: e,
-          header: data.header[e],
-          
-        })
-      })
-
+      setReceipts(await getReceipts(authUser.uid))   
     }
   }, [authUser]);
 
@@ -131,9 +119,31 @@ export default function Dashboard() {
     setDeleteReceiptId("");
   }
 
-  return ((!authUser) ?
-    <CircularProgress color="inherit" sx={{ marginLeft: '50%', marginTop: '25%' }} />
-    :
+  if (!authUser) {
+    return <CircularProgress color="inherit" sx={{ marginLeft: '50%', marginTop: '25%' }} />
+  }
+
+  var data = getReceiptFromJson(authUser.uid)
+  var receiptColumns = []
+  var receiptData = []
+  var columnHeaders = Object.keys(data.header)
+  var rowHeaders = Object.keys(data.tableData)
+  columnHeaders.forEach((e)=>{
+    receiptColumns.push({
+      accessor: e,
+      id: e,
+      header: data.header[e],
+      cell: ({ row, getValue }) => {  
+        return row.original[e]
+      }
+    })
+  })
+  rowHeaders.forEach((x) => {
+    receiptData.push(data.tableData[x])
+  })
+ 
+
+  return ( 
     <div>
       <Head>
         <title>Expense Tracker</title>
@@ -156,7 +166,7 @@ export default function Dashboard() {
         </Stack>
         
         <Stack direction="row" sx={{ paddingTop: "1.5em" }}> 
-          <DashboardDataTable />
+          <DashboardDataTable columns={receiptColumns} tableData={receiptData} />
         </Stack>
       </Container>
     </div>
