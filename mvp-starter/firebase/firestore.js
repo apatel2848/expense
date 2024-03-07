@@ -18,6 +18,7 @@
 import { addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, setDoc, where } from 'firebase/firestore';
 import { db } from './firebase';
 import { getDownloadURL } from './storage';
+import dashboardTableData from '../assets/dashboard-table-data.json'
 
 const RECEIPTS_COLLECTION = 'receipts';
 
@@ -41,4 +42,9 @@ export async function getReceipts(uid) {
     }
     console.log('121313',allReceipts)
     return allReceipts;
+}
+
+
+export function getReceiptFromJson(uid) { 
+    return dashboardTableData;
 }

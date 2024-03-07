@@ -24,9 +24,10 @@ import NavBar from '../components/navbar';
 import ReceiptRow from '../components/receiptRow';
 import ExpenseDialog from '../components/expenseDialog';
 import { useAuth } from '../firebase/auth';
-import { deleteReceipt, getReceipts } from '../firebase/firestore';
+import { deleteReceipt, getReceiptFromJson, getReceipts } from '../firebase/firestore';
 import { deleteImage } from '../firebase/storage';
 import styles from '../styles/dashboard.module.scss';
+import {DashboardDataTable} from './dashboard-table.tsx'
 
 const ADD_SUCCESS = "Receipt was successfully added!";
 const ADD_ERROR = "Receipt was not successfully added!";
@@ -34,6 +35,7 @@ const EDIT_SUCCESS = "Receipt was successfully updated!";
 const EDIT_ERROR = "Receipt was not successfully updated!";
 const DELETE_SUCCESS = "Receipt successfully deleted!";
 const DELETE_ERROR = "Receipt not successfully deleted!";
+ 
 
 // Enum to represent different states of receipts
 export const RECEIPTS_ENUM = Object.freeze({
@@ -63,8 +65,8 @@ export default function Dashboard() {
   // State involved in loading, setting, deleting, and updating receipts
   const [isLoadingReceipts, setIsLoadingReceipts] = useState(true);
   const [deleteReceiptId, setDeleteReceiptId] = useState("");
-  const [deleteReceiptImageBucket, setDeleteReceiptImageBucket] = useState("");
-  const [receipts, setReceipts] = useState([]);
+  const [deleteReceiptImageBucket, setDeleteReceiptImageBucket] = useState(""); 
+  const [receipts, setReceipts] = useState(); 
   const [updateReceipt, setUpdateReceipt] = useState({});
 
   // State involved in snackbar
@@ -90,7 +92,7 @@ export default function Dashboard() {
 
   useEffect(async () => {
     if (authUser) {
-      setReceipts(await getReceipts(authUser.uid))
+      setReceipts(await getReceipts(authUser.uid))   
     }
   }, [authUser]);
 
@@ -117,9 +119,31 @@ export default function Dashboard() {
     setDeleteReceiptId("");
   }
 
-  return ((!authUser) ?
-    <CircularProgress color="inherit" sx={{ marginLeft: '50%', marginTop: '25%' }} />
-    :
+  if (!authUser) {
+    return <CircularProgress color="inherit" sx={{ marginLeft: '50%', marginTop: '25%' }} />
+  }
+
+  var data = getReceiptFromJson(authUser.uid)
+  var receiptColumns = []
+  var receiptData = []
+  var columnHeaders = Object.keys(data.header)
+  var rowHeaders = Object.keys(data.tableData)
+  columnHeaders.forEach((e)=>{
+    receiptColumns.push({
+      accessor: e,
+      id: e,
+      header: data.header[e],
+      cell: ({ row, getValue }) => {  
+        return row.original[e]
+      }
+    })
+  })
+  rowHeaders.forEach((x) => {
+    receiptData.push(data.tableData[x])
+  })
+ 
+
+  return ( 
     <div>
       <Head>
         <title>Expense Tracker</title>
@@ -137,43 +161,14 @@ export default function Dashboard() {
         </Snackbar>
         <Stack direction="row" sx={{ paddingTop: "1.5em" }}>
           <Typography variant="h4" sx={{ lineHeight: 2, paddingRight: "0.5em" }}>
-            EXPENSES
-          </Typography>
-          <IconButton aria-label="edit" color="secondary" onClick={onClickAdd} className={styles.addButton}>
-            <AddIcon />
-          </IconButton>
+            Weekly Food Report
+          </Typography> 
         </Stack>
-        {receipts.map((receipt) => {
-          console.log('tttt', receipt);
-          return <div key={receipt.id}>
-            <Divider light />
-            <ReceiptRow receipt={receipt}
-              onEdit={() => onUpdate(receipt)}
-              onDelete={() => onClickDelete(receipt.id, receipt.imageBucket)} />
-          </div>
-        }
-        )}
+        
+        <Stack direction="row" sx={{ paddingTop: "1.5em" }}> 
+          <DashboardDataTable columns={receiptColumns} tableData={receiptData} />
+        </Stack>
       </Container>
-      <ExpenseDialog edit={updateReceipt}
-        showDialog={action === RECEIPTS_ENUM.add || action === RECEIPTS_ENUM.edit}
-        onError={(receiptEnum) => onResult(receiptEnum, false)}
-        onSuccess={(receiptEnum) => onResult(receiptEnum, true)}
-        onCloseDialog={() => setAction(RECEIPTS_ENUM.none)}>
-      </ExpenseDialog>
-      <Dialog open={action === RECEIPTS_ENUM.delete} onClose={resetDelete}>
-        <Typography variant="h4" className={styles.title}>DELETE EXPENSE</Typography>
-        <DialogContent>
-          <Alert severity="error">This will permanently delete your receipt!</Alert>
-        </DialogContent>
-        <DialogActions sx={{ padding: '0 24px 24px' }}>
-          <Button color="secondary" variant="outlined" onClick={resetDelete}>
-            Cancel
-          </Button>
-          <Button color="secondary" variant="contained" autoFocus>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   )
 }
