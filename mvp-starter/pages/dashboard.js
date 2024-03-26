@@ -24,10 +24,10 @@ import NavBar from '../components/navbar';
 import ReceiptRow from '../components/receiptRow';
 import ExpenseDialog from '../components/expenseDialog';
 import { useAuth } from '../firebase/auth';
-import { deleteReceipt, getReceiptFromJson, getReceipts } from '../firebase/firestore';
+import { deleteReceipt, getReceiptFromJson, getReceipts, getLocationData } from '../firebase/firestore';
 import { deleteImage } from '../firebase/storage';
 import styles from '../styles/dashboard.module.scss';
-import {DashboardDataTable} from './dashboard-table.tsx'
+import { DashboardDataTable } from './dashboard-table.tsx'
 
 const ADD_SUCCESS = "Receipt was successfully added!";
 const ADD_ERROR = "Receipt was not successfully added!";
@@ -35,7 +35,7 @@ const EDIT_SUCCESS = "Receipt was successfully updated!";
 const EDIT_ERROR = "Receipt was not successfully updated!";
 const DELETE_SUCCESS = "Receipt successfully deleted!";
 const DELETE_ERROR = "Receipt not successfully deleted!";
- 
+
 
 // Enum to represent different states of receipts
 export const RECEIPTS_ENUM = Object.freeze({
@@ -65,8 +65,8 @@ export default function Dashboard() {
   // State involved in loading, setting, deleting, and updating receipts
   const [isLoadingReceipts, setIsLoadingReceipts] = useState(true);
   const [deleteReceiptId, setDeleteReceiptId] = useState("");
-  const [deleteReceiptImageBucket, setDeleteReceiptImageBucket] = useState(""); 
-  const [receipts, setReceipts] = useState(); 
+  const [deleteReceiptImageBucket, setDeleteReceiptImageBucket] = useState("");
+  const [receipts, setReceipts] = useState();
   const [updateReceipt, setUpdateReceipt] = useState({});
 
   // State involved in snackbar
@@ -92,7 +92,7 @@ export default function Dashboard() {
 
   useEffect(async () => {
     if (authUser) {
-      setReceipts(await getReceipts(authUser.uid))   
+      setReceipts(await getReceipts(authUser.uid))
     }
   }, [authUser]);
 
@@ -128,12 +128,12 @@ export default function Dashboard() {
   var receiptData = []
   var columnHeaders = Object.keys(data.header)
   var rowHeaders = Object.keys(data.tableData)
-  columnHeaders.forEach((e)=>{
+  columnHeaders.forEach((e) => {
     receiptColumns.push({
       accessor: e,
       id: e,
       header: data.header[e],
-      cell: ({ row, getValue }) => {  
+      cell: ({ row, getValue }) => {
         return row.original[e]
       }
     })
@@ -141,9 +141,91 @@ export default function Dashboard() {
   rowHeaders.forEach((x) => {
     receiptData.push(data.tableData[x])
   })
- 
 
-  return ( 
+  var reportColumns = [];
+  var reportColumsHeaders = [];;
+  var reportRows = []
+
+  var reportData = getLocationData(authUser.uid);
+  // var tableData = [{"0": { "0": "Weekly Net Sales",
+  // "1": 24242.57,
+  // "2": 2669.82,
+  // "3": 20951.26,
+  // "4": 16157.31,
+  // "5": 18820.19}}];
+
+
+  reportData.locations.forEach((data, idx) => {
+    if (idx == 0) { 
+      reportColumns.push(" ");
+      reportData.rowNames.forEach((data1, idx1) => {
+        reportRows.push({[idx]:data1})
+      })
+      
+    };
+    reportColumns.push(data.location.name + ' ' + data.location.id);
+    //console.log('data', data.location.name, 'idx', idx);
+  });
+
+  reportColumns.forEach((data, idx) => {
+    reportColumsHeaders.push({
+      accessor: idx.toString(),
+      id: idx.toString(),
+      header: data,
+      cell: ({ row, getValue }) => {
+        return row.original[data]
+      }
+    })
+  })
+
+  console.log('receiptColumns', receiptColumns);
+  console.log('reportColumns', reportColumsHeaders);
+  console.log('receiptData', receiptData);
+  console.log('reportData', reportRows);
+
+
+
+
+
+
+  // var reportColums = [
+  //   "",
+  //   locData.locations
+  // ];
+
+  // locData.forEach((idx) => {
+  //   console.log('loc :', locData.locations[idx].location.name)
+  // })
+
+  // console.log('reportColums', reportColums)
+
+  // var reportData = {
+  //   header:{
+  //     "0":"",
+
+  //   }
+  // };
+
+  // reportData.push([
+  //   "",
+  //   "Weekly Net Sales",
+  //   "Dcp Amount Purchase",
+  //   "% of DCP",
+  //   "Target DCP",
+  //   "Difference Of Target",
+  //   "Donut Purchase",
+  //   "% of Donut",
+  //   "Target Donut",
+  //   "Difference Of Target",
+  //   "Pepsi Purchase",
+  //   "% of Pepsi",
+  //   "Target Pepsi",
+  //   "Difference Of Target",
+  //   "Total Food Cost",
+  // ]);
+
+
+  return (
     <div>
       <Head>
         <title>Expense Tracker</title>
@@ -162,11 +244,11 @@ export default function Dashboard() {
         <Stack direction="row" sx={{ paddingTop: "1.5em" }}>
           <Typography variant="h4" sx={{ lineHeight: 2, paddingRight: "0.5em" }}>
             Weekly Food Report
-          </Typography> 
+          </Typography>
         </Stack>
-        
-        <Stack direction="row" sx={{ paddingTop: "1.5em" }}> 
-          <DashboardDataTable columns={receiptColumns} tableData={receiptData} />
+
+        <Stack direction="row" sx={{ paddingTop: "1.5em" }}>
+          <DashboardDataTable columns={reportColumsHeaders} tableData={receiptData} />
         </Stack>
       </Container>
     </div>
