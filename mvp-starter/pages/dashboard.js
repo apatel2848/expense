@@ -114,6 +114,10 @@ export default function Dashboard() {
     setDeleteReceiptImageBucket(imageBucket);
   }
 
+  const getValueFromKey= (object, key) => {  
+    return key.split(".").reduce((o, i) => o[i], object);
+  }
+
   const resetDelete = () => {
     setAction(RECEIPTS_ENUM.none);
     setDeleteReceiptId("");
@@ -123,107 +127,38 @@ export default function Dashboard() {
     return <CircularProgress color="inherit" sx={{ marginLeft: '50%', marginTop: '25%' }} />
   }
 
-  var data = getReceiptFromJson(authUser.uid)
-  var receiptColumns = []
-  var receiptData = []
-  var columnHeaders = Object.keys(data.header)
-  var rowHeaders = Object.keys(data.tableData)
-  columnHeaders.forEach((e) => {
-    receiptColumns.push({
-      accessor: e,
-      id: e,
-      header: data.header[e],
-      cell: ({ row, getValue }) => {
-        return row.original[e]
-      }
-    })
-  })
-  rowHeaders.forEach((x) => {
-    receiptData.push(data.tableData[x])
-  })
-
   var reportColumns = [];
   var reportColumsHeaders = [];;
   var reportRows = []
 
-  var reportData = getLocationData(authUser.uid);
-  // var tableData = [{"0": { "0": "Weekly Net Sales",
-  // "1": 24242.57,
-  // "2": 2669.82,
-  // "3": 20951.26,
-  // "4": 16157.31,
-  // "5": 18820.19}}];
+  var reportData = getLocationData(authUser.uid); 
 
-
-  reportData.locations.forEach((data, idx) => {
-    if (idx == 0) { 
-      reportColumns.push(" ");
-      reportData.rowNames.forEach((data1, idx1) => {
-        reportRows.push({[idx]:data1})
-      })
-      
-    };
-    reportColumns.push(data.location.name + ' ' + data.location.id);
-    //console.log('data', data.location.name, 'idx', idx);
+  reportColumns.push(" ");
+  reportData.locations.forEach((data, idx) => {  
+    reportColumns.push(data.location.name + ' ' + data.location.id);  
   });
 
-  reportColumns.forEach((data, idx) => {
+  reportData.rowNames.forEach((data1, idx1) => {
+    var rowData = {}
+    reportData.locations.forEach((data, idx) => {   
+      rowData[idx+1] = getValueFromKey(data, data1.key)
+    });
+    rowData[0] = data1.rowValue
+    reportRows.push(rowData)
+  }); 
+  
+
+  reportColumns.forEach((data, idx) => { 
     reportColumsHeaders.push({
       accessor: idx.toString(),
       id: idx.toString(),
       header: data,
-      cell: ({ row, getValue }) => {
-        return row.original[data]
+      cell: ({row, getValue}) => { 
+        var tmpRowValue = getValueFromKey(row.original, idx.toString()) 
+       return <span>{tmpRowValue}</span>
       }
     })
-  })
-
-  console.log('receiptColumns', receiptColumns);
-  console.log('reportColumns', reportColumsHeaders);
-  console.log('receiptData', receiptData);
-  console.log('reportData', reportRows);
-
-
-
-
-
-
-  // var reportColums = [
-  //   "",
-  //   locData.locations
-  // ];
-
-  // locData.forEach((idx) => {
-  //   console.log('loc :', locData.locations[idx].location.name)
-  // })
-
-  // console.log('reportColums', reportColums)
-
-  // var reportData = {
-  //   header:{
-  //     "0":"",
-
-  //   }
-  // };
-
-  // reportData.push([
-  //   "",
-  //   "Weekly Net Sales",
-  //   "Dcp Amount Purchase",
-  //   "% of DCP",
-  //   "Target DCP",
-  //   "Difference Of Target",
-  //   "Donut Purchase",
-  //   "% of Donut",
-  //   "Target Donut",
-  //   "Difference Of Target",
-  //   "Pepsi Purchase",
-  //   "% of Pepsi",
-  //   "Target Pepsi",
-  //   "Difference Of Target",
-  //   "Total Food Cost",
-  // ]);
-
+  });  
 
   return (
     <div>
@@ -248,7 +183,7 @@ export default function Dashboard() {
         </Stack>
 
         <Stack direction="row" sx={{ paddingTop: "1.5em" }}>
-          <DashboardDataTable columns={reportColumsHeaders} tableData={receiptData} />
+         {reportColumsHeaders.length > 0 &&   <DashboardDataTable columns={reportColumsHeaders} tableData={reportRows} /> }
         </Stack>
       </Container>
     </div>

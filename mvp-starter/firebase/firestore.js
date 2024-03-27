@@ -44,8 +44,7 @@ export async function getReceipts(uid) {
             id: documentSnapshot.id,
             imageUrl: await getDownloadURL(receipt['imageBucket'])
         })
-    }
-    console.log('121313', allReceipts)
+    }  
     return allReceipts;
 }
 
@@ -68,6 +67,26 @@ function generateUUID() { // Public Domain/MIT
 
 export function getLocationData(uid) {
 
+    let allLocations = {
+        "rowNames":[
+            {key:"sales.netSales", rowValue: "Weekly Net Sales"},
+            {key:"purchase.dcp", rowValue:"Dcp Amount Purchase"},
+            {key:"percentage.dcp", rowValue:"% of DCP"},
+            {key:"target.dcp", rowValue:"Target DCP"},
+            {key:"diff.dcp", rowValue:"Difference Of DCP"},
+            {key:"purchase.donut", rowValue:"Donut Purchase"},
+            {key:"percentage.donut", rowValue:"% of Donut"},
+            {key:"target.donut", rowValue:"Target Donut"},
+            {key:"diff.donut", rowValue:"Difference Of Donut"},
+            {key:"purchase.purchase", rowValue: "Pepsi Purchase"},
+            {key:"percentage.pepsi", rowValue:"% of Pepsi"},
+            {key:"target.pepsi", rowValue:"Target Pepsi"},
+            {key:"diff.pepsi", rowValue:"Difference Of Pepsi"},
+            {key:"totFoodCost", rowValue:"Total Food Cost"}
+        ],
+        "locations": []
+    };
+
     const location = locationData;
     location.id = "301556";
     location.name = "Brton";
@@ -88,40 +107,30 @@ export function getLocationData(uid) {
     target.donut = 6.5;
     target.pepsi = 0.5;
 
-    const percentageDcp = ((sales.netSales / purchase.dcp) * 100).toFixed(2);
-    const percentageDonut = ((sales.netSales / purchase.donut) * 100).toFixed(2);
-    const percentagePepsi = ((sales.netSales / purchase.pepsi) * 100).toFixed(2);
+    const percentage = {
+        dcp: ((sales.netSales / purchase.dcp) * 100).toFixed(2),
+        donut: ((sales.netSales / purchase.donut) * 100).toFixed(2),
+        pepsi: ((sales.netSales / purchase.pepsi) * 100).toFixed(2)
+    }
 
-    const diffOfDcp = target.dcp - percentageDcp;
-    const diffOfDonut = target.donut - percentageDonut;
-    const diffOfPepsi = target.pepsi - percentagePepsi;
+    const diff = {
+        dcp: target.dcp - percentage.dcp,
+        donut: target.donut - percentage.donut,
+        pepsi: target.pepsi - percentage.pepsi
+    } 
+
     const totFoodCost = sales.netSales - purchase.donut;
-
-    let allLocations = {
-        "rowNames":["Weekly Net Sales",
-                    "Dcp Amount Purchase","% of DCP","Target DCP","Difference Of DCP",
-                    "Donut Purchase","% of Donut","Target Donut","Difference Of Donut",
-                    "Pepsi Purchase","% of Pepsi","Target Pepsi","Difference Of Pepsi",
-                    "Total Food Cost"
-                ],
-        "locations": [],
-        "percentageDcp": percentageDcp,
-        "percentageDonut": percentageDonut,
-        "percentagePepsi": percentagePepsi,
-        "diffOfDcp": diffOfDcp,
-        "diffOfDonut": diffOfDonut,
-        "diffOfPepsi": diffOfPepsi,
-        "totFoodCost": totFoodCost
-    };
 
     allLocations.locations.push({
         "location": location,
         "sales": sales,
         "purchase": purchase,
         "target": target,
+        "diff": diff,
+        "percentage": percentage,
+        "totFoodCost": totFoodCost
     });
-
-    console.log('allLocations', allLocations);
+ 
     return allLocations;
 }
 
