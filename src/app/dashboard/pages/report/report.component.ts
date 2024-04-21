@@ -1,41 +1,43 @@
-import { Component, OnInit } from '@angular/core'; 
-import { DBStore } from '../../../core/db-store/database.service';
-import { CurrencyPipe, JsonPipe } from '@angular/common';
-import {MatTableModule} from '@angular/material/table';
-import { UserTableEntity } from '../../../core/models/user.model';
-import {MatCardModule} from '@angular/material/card'
-import {MatChipsModule} from '@angular/material/chips' 
-import {MatFormFieldModule} from '@angular/material/form-field' 
-import {MatDatepickerModule} from '@angular/material/datepicker';
+import { Component, OnInit, Signal, computed } from '@angular/core';
+import { CommonModule, CurrencyPipe, JsonPipe } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card'
+import { MatChipsModule } from '@angular/material/chips'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DashboardService } from '../../../core/services/dashboard.service'; 
+import { ColumnHeaderModel, DashboardModel } from '../../../core/models/dashboard.model';
 
- 
+
 @Component({
-    selector: 'app-report',
-    templateUrl: 'report.component.html',
-    standalone: true,
-    imports: [
-      JsonPipe, MatTableModule, MatCardModule, FormsModule, ReactiveFormsModule, CurrencyPipe, MatChipsModule, MatDatepickerModule,MatFormFieldModule
-    ],
-    providers:[
-      DBStore, provideNativeDateAdapter()
-    ]
+  selector: 'app-report',
+  templateUrl: 'report.component.html',
+  styleUrls: ['report.component.scss'],
+  standalone: true,
+  imports: [
+    JsonPipe, MatTableModule, MatCardModule, FormsModule, ReactiveFormsModule, CurrencyPipe, MatChipsModule, MatDatepickerModule, MatFormFieldModule, CommonModule
+  ],
+  providers: [
+    DashboardService, provideNativeDateAdapter()
+  ]
 })
 export class ReportComponent implements OnInit { 
-  public displayedColumns: string[] = ['name', 'monthlyEmi', 'amount', 'typeOfPayment', 'status']; 
-  public users: UserTableEntity[] = [] 
+  public users: any[] = []
+  public reportData: Signal<DashboardModel> = computed(() => this.dashboardService.reportReturnData());
+  public displayedColumns: Signal<string[]> = computed(() => this.reportData().columnHeaders.map((column) => column.id));
+  public displayedColumnObject: Signal<ColumnHeaderModel[]> = computed(() => this.reportData().columnHeaders);
 
-  range = new FormGroup({
-    start: new FormControl<Date | null>(null),
-    end: new FormControl<Date | null>(null),
-  });
+  constructor(private dashboardService: DashboardService) {
 
-  constructor(private dbService: DBStore) {
-    dbService.getUsers().then((data) => {
-      this.users = data
-    })
   }
 
-  ngOnInit(): void {}
+  getColumnDisplayName(column: string) {
+    return this.displayedColumnObject().find(x => x.id == column)?.displayName
+  }
+
+  ngOnInit(): void {
+    this.dashboardService.getReportData()
+   }
 }

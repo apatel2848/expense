@@ -11,7 +11,7 @@ export class Menu {
           label: 'Dashboard',
           route: '/dashboard',
           children: [
-            { label: 'Report', route: '/dashboard/report' }
+            { label: 'Weekly Food Report', route: '/dashboard/report' }
           ],
         }
       ],
