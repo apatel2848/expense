@@ -1,0 +1,71 @@
+<div class="mx-auto px-4 py-4 sm:px-8 lg:container">  
+  
+    <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">  
+    <mat-card class="example-card">
+        <mat-card-header>
+          <mat-card-title-group>
+            <mat-card-title>Report</mat-card-title>  
+            <mat-card-actions>
+                <mat-form-field>
+                    <mat-label>Enter a date range</mat-label>
+                    <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                      <input matStartDate formControlName="start" placeholder="Start date">
+                      <input matEndDate formControlName="end"  placeholder="End date">
+                    </mat-date-range-input>
+                    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                  </mat-form-field>
+            </mat-card-actions>
+          </mat-card-title-group>
+        </mat-card-header>
+        <mat-card-content>
+            <table mat-table [dataSource]="users" class="text-foreground" style="width: 100%;">
+
+                <!--- Note that these columns can be defined in any order.
+                        The actual rendered columns are set as a property on the row definition" -->
+                
+                <!-- Position Column -->
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef> Name </th>
+                    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                </ng-container>
+                
+                <!-- Name Column -->
+                <ng-container matColumnDef="typeOfPayment">
+                    <th mat-header-cell *matHeaderCellDef> Type of Payment </th>
+                    <td mat-cell *matCellDef="let element"> {{element.typeOfPayment}} </td>
+                </ng-container>
+                
+                <!-- Weight Column -->
+                <ng-container matColumnDef="amount">
+                    <th mat-header-cell *matHeaderCellDef> Amount </th>
+                    <td mat-cell *matCellDef="let element"> {{element.amount | currency: 'INR': 'symbol' }} </td>
+                </ng-container>
+                
+                <!-- Symbol Column -->
+                <ng-container matColumnDef="monthlyEmi">
+                    <th mat-header-cell *matHeaderCellDef> Emi Amount </th>
+                    <td mat-cell *matCellDef="let element"> {{element.monthlyEmi | currency: 'INR': 'symbol'}} </td>
+                </ng-container>
+                
+                <!-- Symbol Column -->
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef> Status </th>
+                    <td mat-cell *matCellDef="let element">@if (element.status) {
+                        <mat-chip color="accent" >Paid</mat-chip>
+                    } @else {
+                        <mat-chip color="warn">Overdue</mat-chip>
+                    }</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>  
+        </mat-card-content>
+      </mat-card>
+
+        
+    </div>
+  </div>
+  

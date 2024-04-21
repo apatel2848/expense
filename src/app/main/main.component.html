@@ -1,0 +1,18 @@
+
+        <section class="bg-gray-900 login-image">
+            <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+                <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-white">
+                   Expense Tracker   
+                </a>
+                <div class="w-full rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0 bg-gray-800 border-gray-700">
+                    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                        <h1 class="text-xl leading-tight tracking-tight text-gray-900 text-white">
+                            Sign in to your account
+                        </h1>
+                        <firebase-ui (signInSuccessWithAuthResult)="successCallback($event)"
+                        (signInFailure)="errorCallback($event)"
+                        (uiShown)="uiShownCallback()"></firebase-ui>
+                    </div>
+                </div>
+            </div>
+          </section>  

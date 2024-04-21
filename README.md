@@ -1,26 +1,22 @@
-# Expense Tracker
+# Login template with firebase
 
-This repository contains sample code for some videos on the [Firebase
-YouTube channel](https://www.youtube.com/c/firebase).
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.4.
 
-## How to use this project
+## How to build this repo
 
-This is an expense tracker web app used in the "Firebase Codealong: Build and Manage a Web App" [video series](https://www.youtube.com/playlist?list=PLl-K7zZEsYLlfMZ9isO6Hfnyw040N3uT5). Feel free to clone to follow along.
+Download and follow the below steps
 
-We make this code available as-is.
+1. `npm install`
+2. `ng serve` 
 
+## Build
 
-``` shell
-git clone https://github.com/FirebaseExtended/expense-tracker
-cd expense-tracker
-```
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-If you want to use the finished code, you will have to do the following before it'll work:
-1. In `firebase/firebase.js`, find `firebaseConfig` and update the variable with your [project configuration](https://firebase.google.com/docs/web/setup). 
-2. In `firebase/storage.js`, find `BUCKET_URL` and set it to the `storageBucket` from your `firebaseConfig` variable.
-3. `npm install` in the home directory ("home directory" being any folder inside expense-tracker, ie expense-tracker/mvp) as well as the functions floder.
+## Running unit tests
 
-## License
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-The contents of this repository are licensed under the
-[Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
