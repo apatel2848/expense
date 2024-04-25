@@ -1,5 +1,5 @@
 export interface SalesModel {
     id: string;
-    locationID: string;
+    locationId: string;
     netSales: number;
 }   

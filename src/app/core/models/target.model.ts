@@ -1,7 +1,9 @@
 export interface TargetModel {
     id:string;
-    locationID:string;
+    locationId:string;
     dcp:number;
     donut:number;
     pepsi:number;
+    workmanComp?: number;
+    foodPlusLabour?: number;
 }

@@ -2,6 +2,7 @@ import { LocationModel } from "./location.model"
 import { PurchaseModel } from "./purchase.model"
 import { SalesModel } from "./sales.model"
 import { TargetModel } from "./target.model"
+import { PayrollModel } from "./payroll.model"
 
 export interface ReportModel {
     rowNames: { key: string, rowValue: string }[],
@@ -10,6 +11,7 @@ export interface ReportModel {
         sales: SalesModel,
         purchase: PurchaseModel,
         target: TargetModel,
+        payroll: PayrollModel,
         diff: {
             dcp: number,
             donut: number,
@@ -20,6 +22,9 @@ export interface ReportModel {
             donut: number,
             pepsi: number
         },
-        totFoodCost: number
+        totFoodCost: number,
+        totFoodplusLabour: number,
+        dollarLostThisWeek: number,
+        dollarLostThisYear: number
     }[]
 }

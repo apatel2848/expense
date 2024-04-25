@@ -1,6 +1,6 @@
 export interface PurchaseModel {
     id:string;
-    locationID:string;
+    locationId:string;
     dcp:number;
     donut:number;
     pepsi:number;
