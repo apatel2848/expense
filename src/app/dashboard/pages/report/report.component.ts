@@ -38,6 +38,8 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.dashboardService.getReportData()
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.dashboardService.getReportData(startOfMonth)
    }
 }

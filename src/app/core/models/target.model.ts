@@ -6,4 +6,5 @@ export interface TargetModel {
     pepsi:number;
     workmanComp?: number;
     foodPlusLabour?: number;
+    dateMonth: string;
 }

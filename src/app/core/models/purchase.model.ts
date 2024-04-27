@@ -4,4 +4,5 @@ export interface PurchaseModel {
     dcp:number;
     donut:number;
     pepsi:number;
+    dateMonth: string;
 }

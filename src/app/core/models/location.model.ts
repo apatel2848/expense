@@ -1,4 +1,5 @@
 export interface LocationModel {
     name: string;
-    id: string; 
+    id: number;  
+    documentId: string;
   }
