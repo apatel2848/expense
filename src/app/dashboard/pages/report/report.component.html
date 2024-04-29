@@ -1,28 +1,41 @@
-<div class="mx-auto px-4 py-4 sm:px-8 lg:container">  
-  
-    <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">  
+<div class="mx-auto px-4 py-4 sm:px-8 lg:container">
+
+  <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
     <mat-card class="example-card dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700">
-        <mat-card-header>
-            <mat-card-title>Weekly Food Report</mat-card-title>
-        </mat-card-header>
-        <mat-card-content> 
-            @if(reportData().tableData.length > 0) {
+      <mat-card-header class="flex justify-between" style="height: 68px;">
+        <mat-card-title>Weekly Food Report</mat-card-title>
+        <mat-card-actions>
+          <mat-form-field>
+            <mat-label>Month and Year</mat-label>
+            <input matInput [matDatepicker]="dp" [formControl]="date">
+            <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+            <mat-datepicker #dp startView="multi-year" (monthSelected)="setMonthAndYear($event, dp)"
+              panelClass="example-month-picker">
+            </mat-datepicker>
+          </mat-form-field> 
+        </mat-card-actions>
+      </mat-card-header>
+      <mat-card-content>
+        @if(loader == false) {
+          @if(reportData().tableData.length > 0) {
             <table mat-table [dataSource]="reportData().tableData" class="text-foreground" style="width: 100%;">
-                <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns()">
-                  <th mat-header-cell *matHeaderCellDef> {{getColumnDisplayName(column)}} </th> 
-                  <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
-                </ng-container> 
-              
-                <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
-              </table> 
-            } @else {
-              <div class="text-center">
-                <p>No data available</p>
-              </div>
-            }
-        </mat-card-content>
-      </mat-card> 
-    </div>
+              <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns()">
+                <th mat-header-cell *matHeaderCellDef> {{getColumnDisplayName(column)}} </th>
+                <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
+            </table>
+          } @else {
+            <div class="text-center">
+              <p>No data available</p>
+            </div>
+          }
+      } @else { 
+        <app-report-table-loader></app-report-table-loader>
+      }
+      </mat-card-content>
+    </mat-card>
   </div>
-  
+</div>

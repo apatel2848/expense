@@ -13,20 +13,20 @@ export class ConfigurationsService {
   constructor(private db: DBStore) { }
 
   getAllLocations() {
-    this.db.getAllLocations().then((locations: LocationModel[]) => {
+    return this.db.getAllLocations().then((locations: LocationModel[]) => {
       this.allLocations.set(locations);
     });
   }
 
   updateLable(lable: string) {
-    this.componentLable.set(lable);
+    return this.componentLable.set(lable);
   }
 
   addLocation(location: LocationModel) {
-    this.db.setLocation(location) 
+    return this.db.setLocation(location) 
   }
 
   editLocation(location: LocationModel) {
-    this.db.updateLocation(location)
+    return this.db.updateLocation(location)
   }
 }

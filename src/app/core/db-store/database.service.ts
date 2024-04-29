@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { addDoc, collection, doc, getDocs, getFirestore, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
+import {   addDoc, collection, doc, getDocs, getFirestore, orderBy, query,  updateDoc, where } from "firebase/firestore";
 import { FireTable } from "../constants/tables"
 import { environment } from "../../../environments/environment";
 import { initializeApp } from "firebase/app";
@@ -7,11 +7,8 @@ import { getDownloadURL } from "firebase/storage";
 import { LocationModel } from "../models/location.model";
 import { SalesModel } from "../models/sales.model";
 import { PurchaseModel } from "../models/purchase.model";
-import { TargetModel } from "../models/target.model";
-import { ReportModel } from "../models/report.model";
-import { PayrollModel } from "../models/payroll.model";
-import { Observable, of } from "rxjs";
-import { getDoc } from "firebase/firestore/lite";
+import { TargetModel } from "../models/target.model"; 
+import { PayrollModel } from "../models/payroll.model"; 
 
 @Injectable({
     providedIn: 'root',
@@ -56,7 +53,7 @@ export class DBStore {
     }
 
     async getLocations(locationIds: string[]) {
-        const locations = query(collection(this.db, FireTable.LOCATION_COLLECTION), where("Document ID","in" , locationIds));
+        const locations = query(collection(this.db, FireTable.LOCATION_COLLECTION), where("__name__","in" , locationIds));
         const querySnapshot = await getDocs(locations);
 
         let allLocations: LocationModel[] = [];
@@ -97,7 +94,7 @@ export class DBStore {
         return allLocations;
     }
 
-    async getPurchase(date: any) {
+    async getPurchase(date: any) { 
         const purchases = query(collection(this.db, FireTable.PURCHASE_COLLECTION), where("dateMonth", '==' , date));
         const querySnapshot = await getDocs(purchases);
 
@@ -106,7 +103,7 @@ export class DBStore {
             const purchase = documentSnapshot.data();
             await allPurchases.push({
                 ...purchase,
-                dateMonth: purchase['dateMonth'].toDate(),
+                dateMonth: purchase['dateMonth'],
                 id: documentSnapshot.id,
                 dcp: purchase['dcp'],
                 donut: purchase['donut'],
@@ -118,7 +115,7 @@ export class DBStore {
     }
 
     async getSales(date: any) {
-        const sales = query(collection(this.db, FireTable.PURCHASE_COLLECTION), where("dateMonth", '==' , date));
+        const sales = query(collection(this.db, FireTable.SALES_COLLECTION), where("dateMonth", '==' , date));
         const querySnapshot = await getDocs(sales);
 
         let allSales: SalesModel[] = [];
@@ -126,7 +123,7 @@ export class DBStore {
             const sale = documentSnapshot.data();
             await allSales.push({
                 ...sale,
-                dateMonth: sale['dateMonth'].toDate(),
+                dateMonth: sale['dateMonth'],
                 id: documentSnapshot.id, 
                 locationId: sale['locationId'],
                 netSales: sale['netSales'], 
@@ -144,7 +141,7 @@ export class DBStore {
             const target = documentSnapshot.data();
             await allTargets.push({
                 ...target,
-                dateMonth: target['dateMonth'].toDate(),
+                dateMonth: target['dateMonth'],
                 id: documentSnapshot.id, 
                 dcp: target['dcp'],
                 donut: target['donut'],
@@ -166,7 +163,7 @@ export class DBStore {
             const payroll = documentSnapshot.data();
             await allPayrolls.push({
                 ...payroll,
-                dateMonth: payroll['dateMonth'].toDate(),
+                dateMonth: payroll['dateMonth'],
                 id: documentSnapshot.id, 
                 expenses: payroll['expenses'],
                 locationId: payroll['locationId'],

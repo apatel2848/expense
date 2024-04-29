@@ -7,6 +7,7 @@ import { SalesModel } from "../models/sales.model";
 import { TargetModel } from "../models/target.model";
 import { PayrollModel } from "../models/payroll.model";
 import { LocationModel } from "../models/location.model";
+import {  forkJoin, of,  switchMap } from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -20,7 +21,7 @@ export class DashboardService {
 
     constructor(private db: DBStore) { }
 
-    getReportData(date: Date) {
+    getReportData(date: any) {
         let allLocations: ReportModel = {
             rowNames: [
                 { key: "sales.netSales", rowValue: "Weekly Net Sales" },
@@ -65,7 +66,7 @@ export class DashboardService {
             ],
             locations: []
         };
-
+   
         let locationList: string[] = []; 
         let purchaseDetails: PurchaseModel[] = []
         let salesDetails: SalesModel[] = []
@@ -73,78 +74,88 @@ export class DashboardService {
         let payrollDetails: PayrollModel[] = [] 
         let locationDetails: LocationModel[] = [] 
 
-        this.db.getPurchase(date).then((data) => { 
-            purchaseDetails = data;
-            this.db.getSales(date).then((data) => { 
-                salesDetails = data;
-                this.db.getTarget(date).then((data) => { 
-                    targetDetails = data;
-                    this.db.getPayroll(date).then((data) => { 
-                        payrollDetails = data;
-                        this.getLocationIds(purchaseDetails).forEach(locationId => {
-                            locationList.push(locationId);
-                        });
-                        this.getLocationIds(salesDetails).forEach(locationId => {
-                            locationList.push(locationId);
-                        });
-                        this.getLocationIds(targetDetails).forEach(locationId => {
-                            locationList.push(locationId);
-                        });
-                        this.getLocationIds(payrollDetails).forEach(locationId => {
-                            locationList.push(locationId);
-                        }); 
-                        this.db.getLocations(locationList.filter((item, index) => locationList.indexOf(item) === index)).then((data) => { 
-                            locationDetails = data;
-                            locationDetails.forEach(location => {
+        const observable = forkJoin({        
+            pData: this.db.getPurchase(date),
+            sData: this.db.getSales(date),
+            tData: this.db.getTarget(date),
+            payrollData: this.db.getPayroll(date)
+        }) 
 
-                                let sales: SalesModel = salesDetails.find(sale => sale.locationId === location.documentId)!;
-                                let purchase: PurchaseModel = purchaseDetails.find(purchase => purchase.locationId === location.documentId)!;
-                                let target: TargetModel = targetDetails.find(target => target.locationId === location.documentId)!;
-                                let payroll: PayrollModel = payrollDetails.find(payroll => payroll.locationId === location.documentId)!;            
+        return observable.pipe(
+            switchMap(({ pData, sData, tData, payrollData } ) => { 
+                purchaseDetails = pData; 
+                salesDetails = sData; 
+                targetDetails = tData; 
+                payrollDetails = payrollData; 
+                this.getLocationIds(purchaseDetails).forEach(locationId => {
+                    locationList.push(locationId);
+                });
+                this.getLocationIds(salesDetails).forEach(locationId => {
+                    locationList.push(locationId);
+                });
+                this.getLocationIds(targetDetails).forEach(locationId => {
+                    locationList.push(locationId);
+                });
+                this.getLocationIds(payrollDetails).forEach(locationId => {
+                    locationList.push(locationId);
+                });   
+                if(locationList.length > 0){
+                    this.db.getLocations(locationList.filter((item, index) => locationList.indexOf(item) === index)).then((lData) => { 
+                        locationDetails = lData; 
+                        locationDetails.forEach(location => {
+
+                            let sales: SalesModel = salesDetails.find(sale => sale.locationId === location.documentId)!;
+                            let purchase: PurchaseModel = purchaseDetails.find(purchase => purchase.locationId === location.documentId)!;
+                            let target: TargetModel = targetDetails.find(target => target.locationId === location.documentId)!;
+                            let payroll: PayrollModel = payrollDetails.find(payroll => payroll.locationId === location.documentId)!;            
+                
+                            let percentage: any = {
+                                dcp: ((sales.netSales / purchase.dcp) * 100).toFixed(2),
+                                donut: ((sales.netSales / purchase.donut) * 100).toFixed(2),
+                                pepsi: ((sales.netSales / purchase.pepsi) * 100).toFixed(2),
+                                labour: ((payroll.expenses / sales.netSales) * 100).toFixed(2),
+                                workmanComp: 0
+                            }
                     
-                                let percentage: any = {
-                                    dcp: ((sales.netSales / purchase.dcp) * 100).toFixed(2),
-                                    donut: ((sales.netSales / purchase.donut) * 100).toFixed(2),
-                                    pepsi: ((sales.netSales / purchase.pepsi) * 100).toFixed(2),
-                                    labour: ((payroll.expenses / sales.netSales) * 100).toFixed(2),
-                                    workmanComp: 0
-                                }
-                        
-                                let diff: any = {
-                                    dcp: target.dcp - percentage.dcp,
-                                    donut: target.donut - percentage.donut,
-                                    pepsi: target.pepsi - percentage.pepsi,
-                                    payroll: 0,
-                                    diffOfTarget: 0
-                                }
-                        
-                                let totFoodCost = sales.netSales - purchase.donut;
-                                let totFoodplusLabour = 0;
-                                let dollarLostThisWeek = 0;
-                                let dollarLostThisYear = 0;
-                        
-                                payroll.totalExpenses = percentage.labour;
-                        
-                                allLocations.locations.push({
-                                    location: location,
-                                    sales: sales,
-                                    purchase: purchase,
-                                    target: target,
-                                    diff: diff,
-                                    percentage: percentage,
-                                    payroll: payroll,
-                                    totFoodCost: totFoodCost,
-                                    totFoodplusLabour: totFoodplusLabour,
-                                    dollarLostThisWeek: dollarLostThisWeek,
-                                    dollarLostThisYear: dollarLostThisYear
-                                })
-                                this.setReportData(allLocations)
-                            }); 
-                        });
+                            let diff: any = {
+                                dcp: target.dcp - percentage.dcp,
+                                donut: target.donut - percentage.donut,
+                                pepsi: target.pepsi - percentage.pepsi,
+                                payroll: 0,
+                                diffOfTarget: 0
+                            }
+                    
+                            let totFoodCost = sales.netSales - purchase.donut;
+                            let totFoodplusLabour = 0;
+                            let dollarLostThisWeek = 0;
+                            let dollarLostThisYear = 0;
+                    
+                            payroll.totalExpenses = percentage.labour;
+                    
+                            allLocations.locations.push({
+                                location: location,
+                                sales: sales,
+                                purchase: purchase,
+                                target: target,
+                                diff: diff,
+                                percentage: percentage,
+                                payroll: payroll,
+                                totFoodCost: totFoodCost,
+                                totFoodplusLabour: totFoodplusLabour,
+                                dollarLostThisWeek: dollarLostThisWeek,
+                                dollarLostThisYear: dollarLostThisYear
+                            })
+                            this.setReportData(allLocations) 
+                        }); 
                     });
-                }); 
-            });
-        })    
+                } else { 
+                    allLocations.rowNames = []
+                    allLocations.locations = []
+                    this.setReportData(allLocations) 
+                }
+                return of(allLocations)
+            })
+        ) 
     }
 
     private setReportData(reportData: ReportModel) {
