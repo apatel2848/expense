@@ -1,0 +1,48 @@
+<div class="relative bg-white shadow dark:bg-gray-700">
+  <div class="flex items-center justify-between border-b rounded-t dark:border-gray-600">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white-cust" style="margin: 0px;" mat-dialog-title>
+      Add
+    </h3>
+  </div>
+
+  <mat-dialog-content class="mat-typography dark:text-white-cust">
+    <form>
+      <div class="grid gap-4 mb-4 grid-cols-3">   
+          <div class="col-span-1">
+           <mat-form-field>
+              <mat-label>Month and Year</mat-label>
+              <input matInput [matDatepicker]="dp" [formControl]="date">
+              <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+              <mat-datepicker #dp startView="multi-year" (monthSelected)="setMonthAndYear($event, dp)"
+                panelClass="example-month-picker">
+              </mat-datepicker>
+            </mat-form-field> 
+          </div> 
+          <div class="col-span-2">
+             <mat-form-field>
+              <mat-label>Location</mat-label>
+              <mat-select [(value)]="sales.locationId">
+                @for (location of locationData; track location) {
+                  <mat-option [value]="location.documentId">{{location.name}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field> 
+          </div>  
+          <div class="col-span-1">
+            <label for="netSales" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Net Sales</label>
+            <input [(ngModel)]="sales.netSales" type="number" name="netSales" id="netSales" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          </div>  
+      </div> 
+  </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <div class="flex gap-2 justify-end">
+      <button type="button"
+        class="px-3 py-2 text-xs font-medium text-center rounded-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+        mat-dialog-close>Close</button>
+      <button type="button" [mat-dialog-close]="true" (click)="addLocation()"
+        class="px-3 py-2 text-xs font-medium text-center rounded-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+        cdkFocusInitial>Save</button> 
+    </div> 
+  </mat-dialog-actions>
+</div>

@@ -7,13 +7,17 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AddDialogComponent } from "./add-dialog";
 import { EditDialogComponent } from "./edit-dialog";
+import { PurchaseComponent } from "../purchase";
+import { SalesComponent } from "../sales";
+import { TargetComponent } from "../target";
+import { PayrollComponent } from "../payroll";
 
 @Component({
   selector: "app-location",
   templateUrl: "./location.component.html",
   styleUrls: ["./location.component.scss"],
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatDialogModule],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatDialogModule, PurchaseComponent, SalesComponent, TargetComponent, PayrollComponent],
 })
 export class LocationComponent implements OnInit {
   service = inject(ConfigurationsService);

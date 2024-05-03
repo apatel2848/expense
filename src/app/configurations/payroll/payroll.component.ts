@@ -9,7 +9,7 @@ import { EditDialogComponent } from "../location/edit-dialog";
 import { MatTableModule } from "@angular/material/table";
 import { MatButtonModule } from "@angular/material/button";
 import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { PurchaseModel } from "../../core/models/purchase.model";
+import { PayrollModel } from "../../core/models/payroll.model";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import moment, { Moment } from "moment";
@@ -20,25 +20,38 @@ import { MY_FORMATS } from "../../core/constants/date-format";
 import { MatInputModule } from "@angular/material/input";
 
 @Component({
-  selector: "app-purchase",
-  templateUrl: "./purchase.component.html",
-  styleUrls: ["./purchase.component.scss"],
+  selector: "app-payroll",
+  templateUrl: "./payroll.component.html",
+  styleUrls: ["./payroll.component.scss"],
   standalone: true,
   imports: [CommonModule, MatCardModule, MatTableModule]
 })
-export class PurchaseComponent implements OnInit {
+export class PayrollComponent implements OnInit {
   service = inject(ConfigurationsService);
 
 
-  public purchaseData: Signal<PurchaseModel[]> = computed(() => this.service.allPurchases());
+  public payrollData: Signal<PayrollModel[]> = computed(() => this.service.allPayroll());
   public locationData: Signal<LocationModel[]> = computed(() => this.service.allLocations());
-  public displayedColumnObject: any[] = [{ key: 'locationName', header: 'Location' }, { key: 'donut', header: 'Donut' }, { key: 'dcp', header: 'DCP' }, { key: 'pepsi', header: 'Pepsi' }, { key: 'dateMonth', header: 'Date Month'}]
+  public displayedColumnObject: any[] = [{ key: 'locationName', header: 'Location' },
+   { key: 'expenses', header: 'Expenses' }, 
+   { key: 'maintenance', header: 'Maintenance' }, 
+   { key: 'managerHours', header: 'ManagerHours' }, 
+   { key: 'otherExpenses', header: 'Other Expenses' }, 
+   { key: 'percentOfTaxes', header: '% Of Taxes' }, 
+   { key: 'targetAmount', header: 'Target Amount' }, 
+   { key: 'taxes', header: 'Taxes' }, 
+   { key: 'totalExpenses', header: 'Total Expenses' }, 
+   { key: 'totalLaborHours', header: 'Total Labor Hours' }, 
+   { key: 'trainingHours', header: 'Training Hours' }, 
+   { key: 'workmanComp', header: 'Workman Comp' },  
+   { key: 'dateMonth', header: 'Date Month'}]
+
   public displayedColumns: string[] = this.displayedColumnObject.map((column) => column.key)
   selectedRowId: any = '';
-  selectedRowObj: PurchaseModel = { id:'', dateMonth: '', dcp:0, donut:0, pepsi:0, locationId:'', locationName:''};
+  selectedRowObj: PayrollModel = { id:'', dateMonth: '', locationId:'', locationName:'', expenses: 0, maintenance: 0, managerHours: 0, otherExpenses: 0, percentOfTaxes: 0, targetAmount: 0, taxes: 0, totalExpenses: 0, totalLaborHours: 0, trainingHours: 0, workmanComp: 0};
 
   constructor(public dialog: MatDialog) {
-    this.service.getAllPurchases()
+    this.service.getAllPayrolls()
   }
 
   ngOnInit(): void { }
@@ -51,7 +64,7 @@ export class PurchaseComponent implements OnInit {
 
     if (row.id == this.selectedRowId) {
       this.selectedRowId = ''
-      this.selectedRowObj = { id:'', dateMonth: '', dcp:0, donut:0, pepsi:0, locationId:'', locationName:''};
+      this.selectedRowObj = { id:'', dateMonth: '', locationId:'', locationName:'', expenses: 0, maintenance: 0, managerHours: 0, otherExpenses: 0, percentOfTaxes: 0, targetAmount: 0, taxes: 0, totalExpenses: 0, totalLaborHours: 0, trainingHours: 0, workmanComp: 0};
       return
     }
 
@@ -60,21 +73,21 @@ export class PurchaseComponent implements OnInit {
   }
 
   openDialog() {
-    const dialogRef = this.dialog.open(AddPurchaseDialogComponent);
+    const dialogRef = this.dialog.open(AddPayrollDialogComponent);
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.service.getAllPurchases()
+        this.service.getAllPayrolls()
       }
     });
   }
 
   openEditDialog() {
-    const dialogRef = this.dialog.open(EditPurchaseDialogComponent, { data: Object.assign({}, this.selectedRowObj) });
+    const dialogRef = this.dialog.open(EditPayrollDialogComponent, { data: Object.assign({}, this.selectedRowObj) });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.service.getAllPurchases()
+        this.service.getAllPayrolls()
       }
     });
   }
@@ -82,7 +95,7 @@ export class PurchaseComponent implements OnInit {
 
 
 @Component({
-  selector: "app-add-purchase-dialog",
+  selector: "app-add-payroll-dialog",
   templateUrl: "./add-dialog.component.html",
   styles: [`.dark\:text-white-cust:is(.dark *)  {
       color: white !important;
@@ -92,12 +105,12 @@ export class PurchaseComponent implements OnInit {
     MatDatepickerModule, ReactiveFormsModule, MatInputModule],
     providers: [provideNativeDateAdapter(), DatePipe, provideMomentDateAdapter(MY_FORMATS)]
 })
-export class AddPurchaseDialogComponent implements OnInit {
+export class AddPayrollDialogComponent implements OnInit {
   service = inject(ConfigurationsService);
   public locationData: LocationModel[] = this.service.allLocations();
   date = new FormControl(moment());
 
-  purchase: PurchaseModel = { id:'', dateMonth: '', dcp:0, donut:0, pepsi:0, locationId:'', locationName:'' };
+  payroll: PayrollModel = { id:'', dateMonth: '', locationId:'', locationName:'', expenses: 0, maintenance: 0, managerHours: 0, otherExpenses: 0, percentOfTaxes: 0, targetAmount: 0, taxes: 0, totalExpenses: 0, totalLaborHours: 0, trainingHours: 0, workmanComp: 0};
 
   constructor(private _datePipe: DatePipe) { }
 
@@ -105,7 +118,7 @@ export class AddPurchaseDialogComponent implements OnInit {
     this.date.valueChanges.subscribe((value) => { 
       if(value != null && value != undefined ) {   
         const startOfMonth = new Date(value.year(), value.month(), 1);
-        this.purchase.dateMonth = this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
+        this.payroll.dateMonth = this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
       }
     })
     this.setData(this.date.value) 
@@ -114,7 +127,7 @@ export class AddPurchaseDialogComponent implements OnInit {
   setData(value: any) {
     if(value != null && value != undefined ) {   
       const startOfMonth = new Date(value.year(), value.month(), 1);
-      this.purchase.dateMonth = this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
+      this.payroll.dateMonth = this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
     }
   }
 
@@ -127,14 +140,14 @@ export class AddPurchaseDialogComponent implements OnInit {
   }
 
   addLocation() { 
-    this.service.addPurchase(this.purchase)
+    this.service.addPayroll(this.payroll)
   }
 }
 
 
 
 @Component({
-  selector: "app-edit-purchase-dialog",
+  selector: "app-edit-payroll-dialog",
   templateUrl: "./edit-dialog.component.html",
   styles: [`.dark\:text-white-cust:is(.dark *)  {
       color: white !important;
@@ -143,7 +156,7 @@ export class AddPurchaseDialogComponent implements OnInit {
   imports: [CommonModule, MatDialogModule, MatButtonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatDatepickerModule, ReactiveFormsModule, MatInputModule],
   providers: [provideNativeDateAdapter(), DatePipe, provideMomentDateAdapter(MY_FORMATS)]
 })
-export class EditPurchaseDialogComponent implements OnInit {
+export class EditPayrollDialogComponent implements OnInit {
   service = inject(ConfigurationsService);
   public locationData: LocationModel[] = this.service.allLocations();
   date = new FormControl(moment(new Date(this.data.dateMonth)));
@@ -151,7 +164,7 @@ export class EditPurchaseDialogComponent implements OnInit {
   constructor(
     private _datePipe: DatePipe,
     public dialogRef: MatDialogRef<EditDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: PurchaseModel,
+    @Inject(MAT_DIALOG_DATA) public data: PayrollModel,
   ) { }
 
   ngOnInit(): void {
@@ -172,6 +185,6 @@ export class EditPurchaseDialogComponent implements OnInit {
   }
 
   editLocation() { 
-    this.service.editPurchase(this.data)
+    this.service.editPayroll(this.data)
   }
 }

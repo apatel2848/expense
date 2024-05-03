@@ -7,4 +7,5 @@ export interface TargetModel {
     workmanComp?: number;
     foodPlusLabour?: number;
     dateMonth: string;
+    locationName: string;
 }

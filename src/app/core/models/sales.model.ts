@@ -3,4 +3,5 @@ export interface SalesModel {
     locationId: string;
     netSales: number;
     dateMonth: string;
+    locationName: string;
 }   

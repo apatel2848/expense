@@ -1,7 +1,7 @@
 <div style="margin-top: 10px;">
     <div class="flex justify-between">
         <div>
-            <div class="dark:text-white font-semibold text-gray-900 text-lg">Purchase</div>
+            <div class="dark:text-white font-semibold text-gray-900 text-lg">Payroll</div>
         </div>
         <div class="flex gap-2">
             <button type="button" (click)="openDialog()"
@@ -11,8 +11,8 @@
                 (click)="openEditDialog()" class="">Edit</button>
         </div>
     </div>
-    @if(purchaseData().length > 0) {
-    <table mat-table [dataSource]="purchaseData()"
+    @if(payrollData().length > 0) {
+    <table mat-table [dataSource]="payrollData()"
         class="text-foreground  dark:bg-gray-800 dark:text-white dark:border-gray-600  " style="width: 100%;">
         <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns">
             <th mat-header-cell class="dark:bg-gray-800 dark:text-white dark:border-gray-600  " *matHeaderCellDef>

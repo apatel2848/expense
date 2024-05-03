@@ -9,7 +9,7 @@ import { EditDialogComponent } from "../location/edit-dialog";
 import { MatTableModule } from "@angular/material/table";
 import { MatButtonModule } from "@angular/material/button";
 import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { PurchaseModel } from "../../core/models/purchase.model";
+import { SalesModel } from "../../core/models/sales.model";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import moment, { Moment } from "moment";
@@ -20,25 +20,25 @@ import { MY_FORMATS } from "../../core/constants/date-format";
 import { MatInputModule } from "@angular/material/input";
 
 @Component({
-  selector: "app-purchase",
-  templateUrl: "./purchase.component.html",
-  styleUrls: ["./purchase.component.scss"],
+  selector: "app-sales",
+  templateUrl: "./sales.component.html",
+  styleUrls: ["./sales.component.scss"],
   standalone: true,
   imports: [CommonModule, MatCardModule, MatTableModule]
 })
-export class PurchaseComponent implements OnInit {
+export class SalesComponent implements OnInit {
   service = inject(ConfigurationsService);
 
 
-  public purchaseData: Signal<PurchaseModel[]> = computed(() => this.service.allPurchases());
+  public salesData: Signal<SalesModel[]> = computed(() => this.service.allSales());
   public locationData: Signal<LocationModel[]> = computed(() => this.service.allLocations());
-  public displayedColumnObject: any[] = [{ key: 'locationName', header: 'Location' }, { key: 'donut', header: 'Donut' }, { key: 'dcp', header: 'DCP' }, { key: 'pepsi', header: 'Pepsi' }, { key: 'dateMonth', header: 'Date Month'}]
+  public displayedColumnObject: any[] = [{ key: 'locationName', header: 'Location' }, { key: 'netSales', header: 'Net Sales' }, { key: 'dateMonth', header: 'Date Month'}]
   public displayedColumns: string[] = this.displayedColumnObject.map((column) => column.key)
   selectedRowId: any = '';
-  selectedRowObj: PurchaseModel = { id:'', dateMonth: '', dcp:0, donut:0, pepsi:0, locationId:'', locationName:''};
+  selectedRowObj: SalesModel = { id:'', dateMonth: '',  netSales: 0, locationId:'', locationName:''};
 
   constructor(public dialog: MatDialog) {
-    this.service.getAllPurchases()
+    this.service.getAllSales()
   }
 
   ngOnInit(): void { }
@@ -51,7 +51,7 @@ export class PurchaseComponent implements OnInit {
 
     if (row.id == this.selectedRowId) {
       this.selectedRowId = ''
-      this.selectedRowObj = { id:'', dateMonth: '', dcp:0, donut:0, pepsi:0, locationId:'', locationName:''};
+      this.selectedRowObj = { id:'', dateMonth: '', netSales: 0, locationId:'', locationName:''};
       return
     }
 
@@ -60,21 +60,21 @@ export class PurchaseComponent implements OnInit {
   }
 
   openDialog() {
-    const dialogRef = this.dialog.open(AddPurchaseDialogComponent);
+    const dialogRef = this.dialog.open(AddSalesDialogComponent);
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.service.getAllPurchases()
+        this.service.getAllSales()
       }
     });
   }
 
   openEditDialog() {
-    const dialogRef = this.dialog.open(EditPurchaseDialogComponent, { data: Object.assign({}, this.selectedRowObj) });
+    const dialogRef = this.dialog.open(EditSalesDialogComponent, { data: Object.assign({}, this.selectedRowObj) });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.service.getAllPurchases()
+        this.service.getAllSales()
       }
     });
   }
@@ -82,7 +82,7 @@ export class PurchaseComponent implements OnInit {
 
 
 @Component({
-  selector: "app-add-purchase-dialog",
+  selector: "app-add-sales-dialog",
   templateUrl: "./add-dialog.component.html",
   styles: [`.dark\:text-white-cust:is(.dark *)  {
       color: white !important;
@@ -92,12 +92,12 @@ export class PurchaseComponent implements OnInit {
     MatDatepickerModule, ReactiveFormsModule, MatInputModule],
     providers: [provideNativeDateAdapter(), DatePipe, provideMomentDateAdapter(MY_FORMATS)]
 })
-export class AddPurchaseDialogComponent implements OnInit {
+export class AddSalesDialogComponent implements OnInit {
   service = inject(ConfigurationsService);
   public locationData: LocationModel[] = this.service.allLocations();
   date = new FormControl(moment());
 
-  purchase: PurchaseModel = { id:'', dateMonth: '', dcp:0, donut:0, pepsi:0, locationId:'', locationName:'' };
+  sales: SalesModel = { id:'', dateMonth: '', netSales: 0, locationId:'', locationName:'' };
 
   constructor(private _datePipe: DatePipe) { }
 
@@ -105,7 +105,7 @@ export class AddPurchaseDialogComponent implements OnInit {
     this.date.valueChanges.subscribe((value) => { 
       if(value != null && value != undefined ) {   
         const startOfMonth = new Date(value.year(), value.month(), 1);
-        this.purchase.dateMonth = this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
+        this.sales.dateMonth = this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
       }
     })
     this.setData(this.date.value) 
@@ -114,7 +114,7 @@ export class AddPurchaseDialogComponent implements OnInit {
   setData(value: any) {
     if(value != null && value != undefined ) {   
       const startOfMonth = new Date(value.year(), value.month(), 1);
-      this.purchase.dateMonth = this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
+      this.sales.dateMonth = this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
     }
   }
 
@@ -127,14 +127,14 @@ export class AddPurchaseDialogComponent implements OnInit {
   }
 
   addLocation() { 
-    this.service.addPurchase(this.purchase)
+    this.service.addSales(this.sales)
   }
 }
 
 
 
 @Component({
-  selector: "app-edit-purchase-dialog",
+  selector: "app-edit-sales-dialog",
   templateUrl: "./edit-dialog.component.html",
   styles: [`.dark\:text-white-cust:is(.dark *)  {
       color: white !important;
@@ -143,7 +143,7 @@ export class AddPurchaseDialogComponent implements OnInit {
   imports: [CommonModule, MatDialogModule, MatButtonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatDatepickerModule, ReactiveFormsModule, MatInputModule],
   providers: [provideNativeDateAdapter(), DatePipe, provideMomentDateAdapter(MY_FORMATS)]
 })
-export class EditPurchaseDialogComponent implements OnInit {
+export class EditSalesDialogComponent implements OnInit {
   service = inject(ConfigurationsService);
   public locationData: LocationModel[] = this.service.allLocations();
   date = new FormControl(moment(new Date(this.data.dateMonth)));
@@ -151,7 +151,7 @@ export class EditPurchaseDialogComponent implements OnInit {
   constructor(
     private _datePipe: DatePipe,
     public dialogRef: MatDialogRef<EditDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: PurchaseModel,
+    @Inject(MAT_DIALOG_DATA) public data: SalesModel,
   ) { }
 
   ngOnInit(): void {
@@ -172,6 +172,6 @@ export class EditPurchaseDialogComponent implements OnInit {
   }
 
   editLocation() { 
-    this.service.editPurchase(this.data)
+    this.service.editSales(this.data)
   }
 }
