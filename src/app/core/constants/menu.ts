@@ -10,10 +10,10 @@ export class Menu {
           icon: 'assets/icons/heroicons/outline/setting-web-website-svgrepo-com.svg',
           label: 'Configurations',
           route: '/view/config',
-          // children: [
-          //   { label: 'Locations', route: '/view/config/location' },
-          //   { label: 'Purchase', route: '/view/config/purchase' }
-          // ],
+          children: [
+            { label: 'Locations', route: '/view/config/location' },
+            { label: 'Data entry', route: '/view/config/data-entry' }
+          ],
         }, 
         {
           icon: 'assets/icons/heroicons/outline/chart-pie.svg',

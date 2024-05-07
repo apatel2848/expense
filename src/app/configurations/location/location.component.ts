@@ -11,13 +11,15 @@ import { PurchaseComponent } from "../purchase";
 import { SalesComponent } from "../sales";
 import { TargetComponent } from "../target";
 import { PayrollComponent } from "../payroll";
+import { MatCardModule } from "@angular/material/card";
+import { MatDividerModule } from "@angular/material/divider";
 
 @Component({
   selector: "app-location",
   templateUrl: "./location.component.html",
   styleUrls: ["./location.component.scss"],
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatDialogModule, PurchaseComponent, SalesComponent, TargetComponent, PayrollComponent],
+  imports: [CommonModule, MatTableModule, MatCardModule, LocationComponent, MatDividerModule, MatButtonModule, MatDialogModule, PurchaseComponent, SalesComponent, TargetComponent, PayrollComponent],
 })
 export class LocationComponent implements OnInit {
   service = inject(ConfigurationsService);

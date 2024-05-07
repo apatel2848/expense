@@ -1,0 +1,159 @@
+<div class="mx-auto px-4 py-4 sm:px-8 lg:container">
+    <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
+        <mat-card class="example-card dark:bg-gray-800 dark:text-white dark:border-gray-600  ">
+            <mat-card-header>
+                <mat-card-title>Data Entry</mat-card-title>
+            </mat-card-header>
+            <div style="margin: 0px 16px;">
+                <mat-divider></mat-divider>
+            </div>
+            <mat-card-content style="padding-top: 10px;">
+                <div class="flex gap-4">
+                    <mat-form-field>
+                        <mat-label>Month and Year</mat-label>
+                        <input matInput [matDatepicker]="dp" [formControl]="date">
+                        <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+                        <mat-datepicker #dp startView="multi-year" (monthSelected)="setMonthAndYear($event, dp)"
+                            panelClass="example-month-picker">
+                        </mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Location</mat-label>
+                        <mat-select [(value)]="locationId">
+                            @for (location of locationData(); track location) {
+                            <mat-option [value]="location.documentId">{{location.name}}</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                    <div style="padding: 4px 0px;">
+                        <button type="button" (click)="loadData()" style="padding: 10px;line-height: 1px;"
+                            class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                            <mat-icon>search</mat-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="configTabs">
+                    @if(locationId != '' && dateMonth != '' && loadingTab == 1) {                
+                        <mat-tab-group animationDuration="0ms">
+                            <mat-tab label="Purchase"><app-purchase></app-purchase></mat-tab>
+                            <mat-tab label="Sales"><app-sales></app-sales></mat-tab>
+                            <mat-tab label="Target"><app-target></app-target></mat-tab>
+                            <mat-tab label="Payroll"><app-payroll></app-payroll></mat-tab>
+                        </mat-tab-group>
+                    }
+    
+                    @if(loadingTab == 2 && locationId != '' && dateMonth != '') { 
+                        <mat-tab-group animationDuration="0ms">
+                            <mat-tab label="Purchase">
+                                <div class="grid grid-cols-3" style="margin-top: 30px;">
+                                    <div>
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div>
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div>
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                </div> 
+                            </mat-tab>
+                            <mat-tab label="Sales">
+                                <div class="grid grid-cols-3" style="margin-top: 30px;">
+                                    <div>
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div> 
+                                </div> 
+                            </mat-tab>
+                            <mat-tab label="Target">
+                                <div class="grid grid-cols-3" style="margin-top: 30px;">
+                                    <div>
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div>
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div>
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div style="margin-top: 30px;">
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div style="margin-top: 30px;">
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                </div> 
+                            </mat-tab>
+                            <mat-tab label="Payroll">
+                                <div class="grid grid-cols-3" style="margin-top: 30px;">
+                                    <div>
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div>
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div>
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div style="margin-top: 30px;">
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div style="margin-top: 30px;">
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div style="margin-top: 30px;">
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div style="margin-top: 30px;">
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div style="margin-top: 30px;">
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div style="margin-top: 30px;">
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div style="margin-top: 30px;">
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                    <div style="margin-top: 30px;">
+                                        <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                    </div>
+                                </div> 
+                            </mat-tab>
+                        </mat-tab-group> 
+                    }
+                </div>
+                
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>
+
+
+<!-- <app-purchase></app-purchase>
+
+<app-sales></app-sales>
+
+<app-target></app-target>
+
+<app-payroll></app-payroll> -->
