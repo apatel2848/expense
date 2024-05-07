@@ -98,11 +98,13 @@ export class DashboardService {
                 });
                 this.getLocationIds(payrollDetails).forEach(locationId => {
                     locationList.push(locationId);
-                });   
+                });
+                let idx = 1;   
                 if(locationList.length > 0){
                     this.db.getLocations(locationList.filter((item, index) => locationList.indexOf(item) === index)).then((lData) => { 
                         locationDetails = lData; 
                         locationDetails.forEach(location => {
+                            idx++;
 
                             let sales: SalesModel = salesDetails.find(sale => sale.locationId === location.documentId)!;
                             let purchase: PurchaseModel = purchaseDetails.find(purchase => purchase.locationId === location.documentId)!;
@@ -145,9 +147,25 @@ export class DashboardService {
                                 dollarLostThisWeek: dollarLostThisWeek,
                                 dollarLostThisYear: dollarLostThisYear
                             })
+                            if(locationList.length == idx){
+                                allLocations.locations.push({
+                                    location: {id:0, documentId:"", name:"Total Network"},
+                                    sales: sales,
+                                    purchase: purchase,
+                                    target: target,
+                                    diff: diff,
+                                    percentage: percentage,
+                                    payroll: payroll,
+                                    totFoodCost: totFoodCost,
+                                    totFoodplusLabour: totFoodplusLabour,
+                                    dollarLostThisWeek: dollarLostThisWeek,
+                                    dollarLostThisYear: dollarLostThisYear
+                                })
+                            }
                             this.setReportData(allLocations) 
                         }); 
                     });
+                    let totLocation: LocationModel = {id:0, documentId:"", name:"Total Network"};
                 } else { 
                     allLocations.rowNames = []
                     allLocations.locations = []
