@@ -147,21 +147,21 @@ export class DashboardService {
                                 dollarLostThisWeek: dollarLostThisWeek,
                                 dollarLostThisYear: dollarLostThisYear
                             })
-                            if(locationList.length == idx){
-                                allLocations.locations.push({
-                                    location: {id:0, documentId:"", name:"Total Network"},
-                                    sales: sales,
-                                    purchase: purchase,
-                                    target: target,
-                                    diff: diff,
-                                    percentage: percentage,
-                                    payroll: payroll,
-                                    totFoodCost: totFoodCost,
-                                    totFoodplusLabour: totFoodplusLabour,
-                                    dollarLostThisWeek: dollarLostThisWeek,
-                                    dollarLostThisYear: dollarLostThisYear
-                                })
-                            }
+                            // if(locationList.length == idx){
+                            //     allLocations.locations.push({
+                            //         location: {id:0, documentId:"", name:"Total Network"},
+                            //         sales: sales,
+                            //         purchase: purchase,
+                            //         target: target,
+                            //         diff: diff,
+                            //         percentage: percentage,
+                            //         payroll: payroll,
+                            //         totFoodCost: totFoodCost,
+                            //         totFoodplusLabour: totFoodplusLabour,
+                            //         dollarLostThisWeek: dollarLostThisWeek,
+                            //         dollarLostThisYear: dollarLostThisYear
+                            //     })
+                            // }
                             this.setReportData(allLocations) 
                         }); 
                     });
