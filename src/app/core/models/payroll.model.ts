@@ -17,4 +17,6 @@ export interface PayrollModel {
     //percentOfWorkmanComp?: number;
     //targetWorkmanComp: number;
     totalExpenses?: number;
+    dateMonth: string;
+    locationName: string;   
 }

@@ -8,8 +8,8 @@ const routes: Routes = [
     path: '',
     component: DashboardComponent,
     children: [
-      { path: '', redirectTo: 'report', pathMatch: 'full' },
-      { path: 'report', component: ReportComponent }
+      { path: '', redirectTo: 'weekfoodreport', pathMatch: 'full' },
+      { path: 'weekfoodreport', component: ReportComponent }
     ],
   },
 ];

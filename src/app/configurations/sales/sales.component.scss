@@ -1,0 +1,17 @@
+ 
+
+.mat-mdc-row {
+    height: 35px !important;
+  }
+
+  .highlightTableColor {
+    background-color: red
+  }
+
+  .bg-gray-100-cust {
+    background-color:rgb(229 231 235) !important;
+  }
+ 
+  .dark\:.bg-gray-100-cust:not(.dark *)  {
+    background-color:rgb(229 231 235) !important;
+}

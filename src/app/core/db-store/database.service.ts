@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { collection, getDocs, getFirestore, orderBy, query } from "firebase/firestore";
+import {   addDoc, collection, doc, getDocs, getFirestore, orderBy, query,  updateDoc, where } from "firebase/firestore";
 import { FireTable } from "../constants/tables"
 import { environment } from "../../../environments/environment";
 import { initializeApp } from "firebase/app";
@@ -7,10 +7,8 @@ import { getDownloadURL } from "firebase/storage";
 import { LocationModel } from "../models/location.model";
 import { SalesModel } from "../models/sales.model";
 import { PurchaseModel } from "../models/purchase.model";
-import { TargetModel } from "../models/target.model";
-import { ReportModel } from "../models/report.model";
-import { PayrollModel } from "../models/payroll.model";
-import { Observable, of } from "rxjs";
+import { TargetModel } from "../models/target.model"; 
+import { PayrollModel } from "../models/payroll.model"; 
 
 @Injectable({
     providedIn: 'root',
@@ -54,6 +52,369 @@ export class DBStore {
         return allReceipts;
     }
 
+    async getLocations(locationIds: string[]) {
+        const locations = query(collection(this.db, FireTable.LOCATION_COLLECTION), where("__name__","in" , locationIds));
+        const querySnapshot = await getDocs(locations);
+
+        let allLocations: LocationModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const location = documentSnapshot.data();
+            await allLocations.push({
+                ...location,
+                name: location['name'],
+                id: location['id'],
+                documentId: documentSnapshot.id
+            })
+        } 
+        return allLocations;
+    } 
+
+    async setLocation(location: LocationModel) {
+          addDoc(collection(this.db, FireTable.LOCATION_COLLECTION), { name: location.name, id: location.id})
+    }
+
+    async updateLocation(location: LocationModel) { 
+        updateDoc(doc(this.db, `${FireTable.LOCATION_COLLECTION}/${location.documentId}`), { name: location.name, id: location.id})
+    }
+
+    async setPurchase(purchase: PurchaseModel): Promise<any> {
+        return addDoc(collection(this.db, FireTable.PURCHASE_COLLECTION), { dateMonth: purchase.dateMonth, dcp: purchase.dcp, donut: purchase.donut, pepsi: purchase.pepsi, locationId: purchase.locationId})
+            .then((docRef) => { 
+                return docRef.id
+            }) 
+    }
+
+    async updatePurchase(purchase: PurchaseModel) { 
+        updateDoc(doc(this.db, `${FireTable.PURCHASE_COLLECTION}/${purchase.id}`), { dateMonth: purchase.dateMonth, dcp: purchase.dcp, donut: purchase.donut, pepsi: purchase.pepsi, locationId: purchase.locationId})
+    }
+
+    async setSales(sale: SalesModel): Promise<any> {
+        return  addDoc(collection(this.db, FireTable.SALES_COLLECTION), { dateMonth: sale.dateMonth, netSales: sale.netSales, locationId: sale.locationId})
+        .then((docRef) => { 
+            return docRef.id
+        })
+    }
+
+    async updateSales(sale: SalesModel) { 
+        updateDoc(doc(this.db, `${FireTable.SALES_COLLECTION}/${sale.id}`), { dateMonth: sale.dateMonth, netSales: sale.netSales, locationId: sale.locationId})
+    }
+
+    
+    async setTarget(target: TargetModel) : Promise<any> {
+        return  addDoc(collection(this.db, FireTable.TARGET_COLLECTION), { dateMonth: target.dateMonth,  locationId: target.locationId, dcp: target.dcp, donut: target.donut, pepsi: target.pepsi, foodPlusLabour: target.foodPlusLabour, workmanComp: target.workmanComp})
+        .then((docRef) => { 
+            return docRef.id
+        })
+    }
+
+    async updateTarget(target: TargetModel) { 
+        updateDoc(doc(this.db, `${FireTable.TARGET_COLLECTION}/${target.id}`), { dateMonth: target.dateMonth, locationId: target.locationId, dcp: target.dcp, donut: target.donut, pepsi: target.pepsi, foodPlusLabour: target.foodPlusLabour, workmanComp: target.workmanComp})
+    }
+
+    async setPayroll(payroll: PayrollModel) : Promise<any> {
+        return  addDoc(collection(this.db, FireTable.PAYROLL_COLLECTION), { dateMonth: payroll.dateMonth,  locationId: payroll.locationId, expenses: payroll.expenses, managerHours: payroll.managerHours, trainingHours: payroll.trainingHours, totalLaborHours: payroll.totalLaborHours, targetAmount: payroll.targetAmount, otherExpenses: payroll.otherExpenses, maintenance: payroll.maintenance, taxes: payroll.taxes, workmanComp: payroll.workmanComp, totalExpenses: payroll.totalExpenses, percentOfTaxes: payroll.percentOfTaxes})
+        .then((docRef) => { 
+            return docRef.id
+        })
+    }
+
+    async updatePayroll(payroll: PayrollModel) { 
+        updateDoc(doc(this.db, `${FireTable.PAYROLL_COLLECTION}/${payroll.id}`), { dateMonth: payroll.dateMonth, locationId: payroll.locationId, expenses: payroll.expenses, managerHours: payroll.managerHours, trainingHours: payroll.trainingHours, totalLaborHours: payroll.totalLaborHours, targetAmount: payroll.targetAmount, otherExpenses: payroll.otherExpenses, maintenance: payroll.maintenance, taxes: payroll.taxes, workmanComp: payroll.workmanComp, totalExpenses: payroll.totalExpenses, percentOfTaxes: payroll.percentOfTaxes})
+    }
+
+    async getAllLocations() {
+        const locations = query(collection(this.db, FireTable.LOCATION_COLLECTION), orderBy("name"));
+        const querySnapshot = await getDocs(locations);
+
+        let allLocations: LocationModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const location = documentSnapshot.data();
+            await allLocations.push({
+                ...location,
+                name: location['name'],
+                id: location['id'],
+                documentId: documentSnapshot.id
+            })
+        } 
+        return allLocations;
+    }
+
+    async getAllPurchases() {
+        const purchases = query(collection(this.db, FireTable.PURCHASE_COLLECTION));
+        const querySnapshot = await getDocs(purchases);
+
+        let allPurchases: PurchaseModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const purchase = documentSnapshot.data();
+            await allPurchases.push({
+                ...purchase, 
+                id: documentSnapshot.id,
+                dateMonth: purchase['dateMonth'],
+                dcp: purchase['dcp'],
+                donut: purchase['donut'],
+                pepsi: purchase['pepsi'],
+                locationId: purchase['locationId'],      
+                locationName: ''
+            })
+        } 
+        return allPurchases;
+    } 
+    
+    async getPurchaseData(dateMonth: string, locationId: string) {
+        const purchases = query(collection(this.db, FireTable.PURCHASE_COLLECTION), where("dateMonth", '==' , dateMonth), where("locationId", '==' , locationId));
+        const querySnapshot = await getDocs(purchases);
+
+        let allPurchases: PurchaseModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const purchase = documentSnapshot.data();
+            await allPurchases.push({
+                ...purchase, 
+                id: documentSnapshot.id,
+                dateMonth: purchase['dateMonth'],
+                dcp: purchase['dcp'],
+                donut: purchase['donut'],
+                pepsi: purchase['pepsi'],
+                locationId: purchase['locationId'],      
+                locationName: ''
+            })
+        } 
+        return allPurchases.length > 0 ? allPurchases[0] : { id: '', dateMonth: '', dcp: 0, donut: 0, pepsi: 0, locationId: '', locationName: '' };
+    }
+
+    async getAllSales() {
+        const sales = query(collection(this.db, FireTable.SALES_COLLECTION));
+        const querySnapshot = await getDocs(sales);
+
+        let allSales: SalesModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const sale = documentSnapshot.data();
+            await allSales.push({
+                ...sale, 
+                id: documentSnapshot.id,
+                dateMonth: sale['dateMonth'],
+                netSales: sale['netSales'], 
+                locationId: sale['locationId'],      
+                locationName: ''
+            })
+        } 
+        return allSales;
+    } 
+    
+    async getSaleData(dateMonth: string, locationId: string) {
+        const sales = query(collection(this.db, FireTable.SALES_COLLECTION), where("dateMonth", '==' , dateMonth), where("locationId", '==' , locationId));
+        const querySnapshot = await getDocs(sales);
+
+        let allSales: SalesModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const sale = documentSnapshot.data();
+            await allSales.push({
+                ...sale, 
+                id: documentSnapshot.id,
+                dateMonth: sale['dateMonth'],
+                netSales: sale['netSales'], 
+                locationId: sale['locationId'],      
+                locationName: ''
+            })
+        } 
+        return allSales.length > 0 ? allSales[0] : { id:'', dateMonth: '',  netSales: 0, locationId:'', locationName:''};
+    }
+
+    async getAllTarget() {
+        const target = query(collection(this.db, FireTable.TARGET_COLLECTION));
+        const querySnapshot = await getDocs(target);
+
+        let allTargets: TargetModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const targetTmp = documentSnapshot.data();
+            await allTargets.push({
+                ...targetTmp, 
+                id: documentSnapshot.id,
+                dateMonth: targetTmp['dateMonth'],
+                dcp: targetTmp['dcp'], 
+                donut: targetTmp['donut'], 
+                pepsi: targetTmp['pepsi'], 
+                foodPlusLabour: targetTmp['foodPlusLabour'], 
+                workmanComp: targetTmp['workmanComp'], 
+                locationId: targetTmp['locationId'],      
+                locationName: ''
+            })
+        } 
+        return allTargets;
+    } 
+    
+    async getTargetData(dateMonth: string, locationId: string) {
+        const target = query(collection(this.db, FireTable.TARGET_COLLECTION), where("dateMonth", '==' , dateMonth), where("locationId", '==' , locationId));
+        const querySnapshot = await getDocs(target);
+
+        let allTargets: TargetModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const targetTmp = documentSnapshot.data();
+            await allTargets.push({
+                ...targetTmp, 
+                id: documentSnapshot.id,
+                dateMonth: targetTmp['dateMonth'],
+                dcp: targetTmp['dcp'], 
+                donut: targetTmp['donut'], 
+                pepsi: targetTmp['pepsi'], 
+                foodPlusLabour: targetTmp['foodPlusLabour'], 
+                workmanComp: targetTmp['workmanComp'], 
+                locationId: targetTmp['locationId'],      
+                locationName: ''
+            })
+        } 
+        return allTargets.length > 0 ? allTargets[0] : { id:'', dateMonth: '', dcp: 0, donut:0, foodPlusLabour:0, pepsi:0, workmanComp: 0, locationId:'', locationName:'' };
+    }
+
+    async getAllPayroll() {
+        const payroll = query(collection(this.db, FireTable.PAYROLL_COLLECTION));
+        const querySnapshot = await getDocs(payroll);
+
+        let allPayroll: PayrollModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const payrollTmp = documentSnapshot.data();
+            await allPayroll.push({
+                ...payrollTmp, 
+                id: documentSnapshot.id,
+                dateMonth: payrollTmp['dateMonth'], 
+                locationId: payrollTmp['locationId'],      
+                locationName: '',
+                expenses: payrollTmp['expenses'],
+                managerHours: payrollTmp['managerHours'],
+                trainingHours: payrollTmp['trainingHours'],
+                totalLaborHours: payrollTmp['totalLaborHours'],
+                targetAmount: payrollTmp['targetAmount'],
+                otherExpenses: payrollTmp['otherExpenses'], 
+                maintenance: payrollTmp['maintenance'],
+                taxes: payrollTmp['taxes'],
+                workmanComp: payrollTmp['workmanComp'],
+                totalExpenses: payrollTmp['totalExpenses'],
+                percentOfTaxes: payrollTmp['percentOfTaxes'] 
+            })
+        } 
+        return allPayroll;
+    }
+
+    async getPayrollData(dateMonth: string, locationId: string) {
+        const payroll = query(collection(this.db, FireTable.PAYROLL_COLLECTION), where("dateMonth", '==' , dateMonth), where("locationId", '==' , locationId));
+        const querySnapshot = await getDocs(payroll);
+
+        let allPayroll: PayrollModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const payrollTmp = documentSnapshot.data();
+            await allPayroll.push({
+                ...payrollTmp, 
+                id: documentSnapshot.id,
+                dateMonth: payrollTmp['dateMonth'], 
+                locationId: payrollTmp['locationId'],      
+                locationName: '',
+                expenses: payrollTmp['expenses'],
+                managerHours: payrollTmp['managerHours'],
+                trainingHours: payrollTmp['trainingHours'],
+                totalLaborHours: payrollTmp['totalLaborHours'],
+                targetAmount: payrollTmp['targetAmount'],
+                otherExpenses: payrollTmp['otherExpenses'], 
+                maintenance: payrollTmp['maintenance'],
+                taxes: payrollTmp['taxes'],
+                workmanComp: payrollTmp['workmanComp'],
+                totalExpenses: payrollTmp['totalExpenses'],
+                percentOfTaxes: payrollTmp['percentOfTaxes'] 
+            })
+        } 
+        return allPayroll.length > 0 ? allPayroll[0] : { id:'', dateMonth: '', locationId:'', locationName:'', expenses: 0, maintenance: 0, managerHours: 0, otherExpenses: 0, percentOfTaxes: 0, targetAmount: 0, taxes: 0, totalExpenses: 0, totalLaborHours: 0, trainingHours: 0, workmanComp: 0};
+    }
+
+    async getPurchase(date: any) { 
+        const purchases = query(collection(this.db, FireTable.PURCHASE_COLLECTION), where("dateMonth", '==' , date));
+        const querySnapshot = await getDocs(purchases);
+
+        let allPurchases: PurchaseModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const purchase = documentSnapshot.data();
+            await allPurchases.push({
+                ...purchase,
+                dateMonth: purchase['dateMonth'],
+                id: documentSnapshot.id,
+                dcp: purchase['dcp'],
+                donut: purchase['donut'],
+                pepsi: purchase['pepsi'],
+                locationId: purchase['locationId'],
+                locationName: ''
+            })
+        } 
+        return allPurchases;
+    }
+
+    async getSales(date: any) {
+        const sales = query(collection(this.db, FireTable.SALES_COLLECTION), where("dateMonth", '==' , date));
+        const querySnapshot = await getDocs(sales);
+
+        let allSales: SalesModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const sale = documentSnapshot.data();
+            await allSales.push({
+                ...sale,
+                dateMonth: sale['dateMonth'],
+                id: documentSnapshot.id, 
+                locationId: sale['locationId'],
+                netSales: sale['netSales'], 
+                locationName: ''
+            })
+        } 
+        return allSales;
+    }
+
+    async getTarget(date: any) {
+        const targets = query(collection(this.db, FireTable.TARGET_COLLECTION), where("dateMonth", '==' , date));
+        const querySnapshot = await getDocs(targets);
+
+        let allTargets: TargetModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const target = documentSnapshot.data();
+            await allTargets.push({
+                ...target,
+                dateMonth: target['dateMonth'],
+                id: documentSnapshot.id, 
+                dcp: target['dcp'],
+                donut: target['donut'],
+                locationId: target['locationId'],
+                pepsi: target['pepsi'],
+                foodPlusLabour: target['foodPlusLabour'],
+                workmanComp: target['workmanComp'],
+                locationName: ''
+            })
+        } 
+        return allTargets;
+    }
+
+    async getPayroll(date: any) {
+        const payrolls = query(collection(this.db, FireTable.PAYROLL_COLLECTION), where("dateMonth", '==' , date));
+        const querySnapshot = await getDocs(payrolls);
+
+        let allPayrolls: PayrollModel[] = [];
+        for (const documentSnapshot of querySnapshot.docs) {
+            const payroll = documentSnapshot.data();
+            await allPayrolls.push({
+                ...payroll,
+                dateMonth: payroll['dateMonth'],
+                id: documentSnapshot.id, 
+                expenses: payroll['expenses'],
+                locationId: payroll['locationId'],
+                managerHours: payroll['managerHours'],
+                trainingHours: payroll['trainingHours'],
+                totalLaborHours: payroll['totalLaborHours'],
+                targetAmount: payroll['targetAmount'],
+                otherExpenses: payroll['otherExpenses'],
+                cleaning: payroll['cleaning'],
+                maintenance: payroll['maintenance'],
+                taxes: payroll['taxes'],
+                workmanComp: payroll['workmanComp'],
+                totalExpenses: payroll['totalExpenses'],
+                percentOfTaxes: payroll['percentOfTaxes'],
+                locationName: ''
+            })
+        } 
+        return allPayrolls;
+    }
 
     generateUUID() { // Public Domain/MIT
         var d = new Date().getTime();//Timestamp
@@ -69,111 +430,5 @@ export class DBStore {
             }
             return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
-    }
-
-
-    getLocationData(uid: any): Observable<ReportModel> {
-
-        let allLocations: ReportModel = {
-            rowNames: [
-                { key: "sales.netSales", rowValue: "Weekly Net Sales" },
-                { key: "purchase.dcp", rowValue: "Dcp Amount Purchase" },
-                { key: "percentage.dcp", rowValue: "% Of DCP" },
-                { key: "target.dcp", rowValue: "Target DCP" },
-                { key: "diff.dcp", rowValue: "Difference Of DCP" },
-                { key: "purchase.donut", rowValue: "Donut Purchase" },
-                { key: "percentage.donut", rowValue: "% Of Donut" },
-                { key: "target.donut", rowValue: "Target Donut" },
-                { key: "diff.donut", rowValue: "Difference Of Donut" },
-                { key: "purchase.purchase", rowValue: "Pepsi Purchase" },
-                { key: "percentage.pepsi", rowValue: "% Of Pepsi" },
-                { key: "target.pepsi", rowValue: "Target Pepsi" },
-                { key: "diff.pepsi", rowValue: "Difference Of Pepsi" },
-                { key: "totFoodCost", rowValue: "Total Food Cost" },
-                { key: "blank", rowValue: "" },
-
-                { key: "payroll.expenses", rowValue: "Payroll Expenses" },
-                { key: "payroll.managerHours", rowValue: "Manager Hours" },
-                { key: "payroll.trainingHours", rowValue: "Training Hours" },
-                { key: "payroll.totalLaborHours", rowValue: "Total Labor Hours" },
-                { key: "percentage.labour", rowValue: "% Of Labor" },
-                { key: "payroll.targetAmount", rowValue: "Target Payroll Amount" },
-                { key: "diff.payroll", rowValue: "Difference Of Target" },
-                { key: "payroll.otherExpenses", rowValue: "Other Expenses" },
-                { key: "payroll.cleaning", rowValue: "Cleaning" },
-                { key: "payroll.maintenance", rowValue: "Maintenance" },
-                { key: "payroll.taxes", rowValue: "Payroll Taxes" },
-                { key: "payroll.percentOfTaxes", rowValue: "% Of Payroll Taxes" },
-                { key: "payroll.workmanComp", rowValue: "Workman Comp" },
-                { key: "percentage.workmanComp", rowValue: "% Of Workman Comp" },
-                { key: "target.workmanComp", rowValue: "Target Workman Comp" },
-                { key: "payroll.expenses", rowValue: "Total Payroll Expenses" },
-                { key: "blank", rowValue: "" },
-
-                { key: "totFoodplusLabour", rowValue: "Total Food Plus Labor" },
-                { key: "target.foodPlusLabour", rowValue: "Target Food Plus Labour" },
-                { key: "diff.diffOfTarget", rowValue: "Difference Of Target" },
-                { key: "dollarLostThisWeek", rowValue: "Dollar Lost This Week" },
-                { key: "dollarLostThisYear", rowValue: "Dollar Lost This Year" },
-                
-
-
-
-
-            ],
-            locations: []
-        };
-
-        let location: LocationModel = { id: "301556", name: "Brton" };
-
-        let sales: SalesModel = { id: this.generateUUID(), locationId: location.id, netSales: 24242.57 };
-
-        let purchase: PurchaseModel = { id: "", locationId: "", dcp: 4460.68, donut: 1242.49, pepsi: 0 };
-
-        let target: TargetModel = { id: "", locationId: location.id, dcp: 17, donut: 6.5, pepsi: 0.5, workmanComp: 0.4 };
-
-        let payroll: PayrollModel = {
-            id: "", locationId: location.id, expenses: 6691.23, managerHours: 77,
-            trainingHours: 10
-        };
-
-        let percentage: any = {
-            dcp: ((sales.netSales / purchase.dcp) * 100).toFixed(2),
-            donut: ((sales.netSales / purchase.donut) * 100).toFixed(2),
-            pepsi: ((sales.netSales / purchase.pepsi) * 100).toFixed(2),
-            labour: ((payroll.expenses / sales.netSales) * 100).toFixed(2),
-            workmanComp: 0
-        }
-
-        let diff: any = {
-            dcp: target.dcp - percentage.dcp,
-            donut: target.donut - percentage.donut,
-            pepsi: target.pepsi - percentage.pepsi,
-            payroll: 0,
-            diffOfTarget: 0
-        }
-
-        let totFoodCost = sales.netSales - purchase.donut;
-        let totFoodplusLabour = 0;
-        let dollarLostThisWeek = 0;
-        let dollarLostThisYear = 0;
-
-        payroll.totalExpenses = percentage.labour;
-
-        allLocations.locations.push({
-            location: location,
-            sales: sales,
-            purchase: purchase,
-            target: target,
-            diff: diff,
-            percentage: percentage,
-            payroll: payroll,
-            totFoodCost: totFoodCost,
-            totFoodplusLabour: totFoodplusLabour,
-            dollarLostThisWeek: dollarLostThisWeek,
-            dollarLostThisYear: dollarLostThisYear
-        })
-
-        return of(allLocations);
-    }
+    } 
 }
