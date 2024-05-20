@@ -16,7 +16,7 @@ import { LocationModel } from "../../../core/models/location.model";
 export class AddDialogComponent implements OnInit {
   service = inject(ConfigurationsService);
 
-  location: LocationModel = { id: 0, name: '', documentId: '' };
+  location: LocationModel = { id: 0, name: '', documentId: '', dcp: 0, donut: 0, pepsi: 0, workmanComp: 0, foodPlusLabour: 0};
 
   constructor() { }
 

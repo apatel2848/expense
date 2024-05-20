@@ -21,7 +21,7 @@ export class DashboardService {
 
     constructor(private db: DBStore) { }
 
-    getReportData(date: any) {
+    getReportData(startDate: any, endDate: any) {
         let allLocations: ReportModel = {
             rowNames: [
                 { key: "sales.netSales", rowValue: "Weekly Net Sales" },
@@ -75,17 +75,17 @@ export class DashboardService {
         let locationDetails: LocationModel[] = []
 
         const observable = forkJoin({
-            pData: this.db.getPurchase(date),
-            sData: this.db.getSales(date),
-            tData: this.db.getTarget(date),
-            payrollData: this.db.getPayroll(date)
+            pData: this.db.getPurchase(startDate, endDate),
+            sData: this.db.getSales(startDate, endDate),
+            //tData: this.db.getTarget(startDate, endDate),
+            payrollData: this.db.getPayroll(startDate, endDate)
         })
 
         return observable.pipe(
-            switchMap(({ pData, sData, tData, payrollData }) => {
+            switchMap(({ pData, sData, payrollData }) => {
                 purchaseDetails = pData;
                 salesDetails = sData;
-                targetDetails = tData;
+                //targetDetails = tData;
                 payrollDetails = payrollData;
                 this.getLocationIds(purchaseDetails).forEach(locationId => {
                     locationList.push(locationId);
@@ -106,10 +106,16 @@ export class DashboardService {
                         locationDetails.forEach(location => {
                             idx++;
 
-                            let sales: SalesModel = salesDetails.find(sale => sale.locationId === location.documentId)!;
-                            let purchase: PurchaseModel = purchaseDetails.find(purchase => purchase.locationId === location.documentId)!;
-                            let target: TargetModel = targetDetails.find(target => target.locationId === location.documentId)!;
-                            let payroll: PayrollModel = payrollDetails.find(payroll => payroll.locationId === location.documentId)!;
+                            let sales: any = this.sumSalesProperties(salesDetails.filter(sale => sale.locationId === location.documentId)!);
+                            let purchase: any = this.sumPurchaseProperties(purchaseDetails.filter(purchase => purchase.locationId === location.documentId)!);
+                            let target: TargetModel = {
+                                dcp: location.dcp,
+                                donut: location.donut,
+                                pepsi: location.pepsi,
+                                foodPlusLabour: location.foodPlusLabour,
+                                workmanComp: location.workmanComp
+                            };
+                            let payroll: any = this.sumPayrollProperties(payrollDetails.filter(payroll => payroll.locationId === location.documentId)!);
                             if (sales !== undefined && purchase !== undefined && target !== undefined && payroll !== undefined) {
                                 let percentage: any = {
                                     dcp: ((sales.netSales / purchase.dcp) * 100).toFixed(2),
@@ -166,7 +172,7 @@ export class DashboardService {
                             }
                         });
                     });
-                    let totLocation: LocationModel = { id: 0, documentId: "", name: "Total Network" };
+                    //let totLocation: LocationModel = { id: 0, documentId: "", name: "Total Network" };
                 } else {
                     allLocations.rowNames = []
                     allLocations.locations = []
@@ -220,5 +226,76 @@ export class DashboardService {
             locationIds.push(element['locationId']);
         });
         return locationIds;
+    }
+
+    private sumPayrollProperties(items: PayrollModel[]): {
+        expenses: number;
+        managerHours: number;
+        trainingHours: number;
+        totalLaborHours?: number; 
+        targetAmount?: number; 
+        otherExpenses?: number;
+        cleaning?: number;
+        maintenance?: number;
+        taxes?: number;
+        percentOfTaxes?: number;
+        workmanComp?: number; 
+        totalExpenses?: number;
+    } {
+        return items.reduce((accumulator, currentItem) => {
+            return {
+                expenses: accumulator.expenses + currentItem.expenses,
+                managerHours: accumulator.managerHours + currentItem.managerHours,
+                trainingHours: accumulator.trainingHours + currentItem.trainingHours,
+                totalLaborHours: accumulator.totalLaborHours + (currentItem.totalLaborHours ?? 0), 
+                targetAmount: accumulator.targetAmount + (currentItem.targetAmount?? 0), 
+                otherExpenses: accumulator.otherExpenses + (currentItem.otherExpenses?? 0), 
+                cleaning: accumulator.cleaning + (currentItem.cleaning?? 0), 
+                maintenance: accumulator.maintenance + (currentItem.maintenance?? 0), 
+                taxes: accumulator.taxes + (currentItem.taxes?? 0), 
+                percentOfTaxes: accumulator.percentOfTaxes + (currentItem.percentOfTaxes?? 0), 
+                workmanComp: accumulator.workmanComp + (currentItem.workmanComp?? 0), 
+                totalExpenses: accumulator.totalExpenses + (currentItem.totalExpenses?? 0),
+            };
+        }, {
+            expenses: 0,
+            managerHours: 0,
+            trainingHours: 0,
+            totalLaborHours: 0, 
+            targetAmount: 0, 
+            otherExpenses: 0,
+            cleaning: 0,
+            maintenance: 0,
+            taxes: 0,
+            percentOfTaxes: 0,
+            workmanComp: 0, 
+            totalExpenses: 0,
+        });
+    }
+
+    private sumPurchaseProperties(items: PurchaseModel[]): {
+        dcp: number;
+        donut: number;
+        pepsi: number;
+    } {
+        return items.reduce((accumulator, currentItem) => {
+            return {
+                dcp: accumulator.dcp + currentItem.dcp,
+                donut: accumulator.donut + currentItem.donut,
+                pepsi: accumulator.pepsi + currentItem.pepsi,
+            };
+        }, {
+            dcp: 0,
+            donut: 0,
+            pepsi: 0
+        });
+    }
+
+    private sumSalesProperties(items: SalesModel[]): { netSales: number } {
+        return items.reduce((accumulator, currentItem) => {
+            return {
+                netSales: accumulator.netSales + currentItem.netSales
+            };
+        }, { netSales: 0 });
     }
 }

@@ -21,7 +21,7 @@ export class ConfigurationsService {
   public locationId: WritableSignal<string> = signal<string>('');
   public purchase: WritableSignal<PurchaseModel> = signal<PurchaseModel>({ id: '', dateMonth: '', dcp: 0, donut: 0, pepsi: 0, locationId: '', locationName: '' });
   public sales: WritableSignal<SalesModel> = signal<SalesModel>({ id:'', dateMonth: '',  netSales: 0, locationId:'', locationName:''});
-  public target: WritableSignal<TargetModel> = signal<TargetModel>({ id:'', dateMonth: '', dcp: 0, donut:0, foodPlusLabour:0, pepsi:0, workmanComp: 0, locationId:'', locationName:'' });
+  public target: WritableSignal<TargetModel> = signal<TargetModel>({   dcp: 0, donut:0, foodPlusLabour:0, pepsi:0, workmanComp: 0 });
   public payroll: WritableSignal<PayrollModel> = signal<PayrollModel>({ id:'', dateMonth: '', locationId:'', locationName:'', expenses: 0, maintenance: 0, managerHours: 0, otherExpenses: 0, percentOfTaxes: 0, targetAmount: 0, taxes: 0, totalExpenses: 0, totalLaborHours: 0, trainingHours: 0, workmanComp: 0});
 
   constructor(private db: DBStore) { }
@@ -56,7 +56,8 @@ export class ConfigurationsService {
     });
   }
 
-  getPurchases(dateMonth: string, locationId: string) {
+  getPurchases(dateMonth: any, locationId: string) {
+     
     return this.db.getPurchaseData(dateMonth, locationId).then((purchase: PurchaseModel) => {
       purchase.dateMonth = dateMonth;
       purchase.locationId = locationId;
@@ -65,7 +66,8 @@ export class ConfigurationsService {
     });
   }
 
-  getSales(dateMonth: string, locationId: string) {
+  getSales(dateMonth: any, locationId: string) {
+     
     return this.db.getSaleData(dateMonth, locationId).then((sales: SalesModel) => {
       sales.dateMonth = dateMonth;
       sales.locationId = locationId;
@@ -74,16 +76,17 @@ export class ConfigurationsService {
     });
   }
   
-  getTarget(dateMonth: string, locationId: string) {
-    return this.db.getTargetData(dateMonth, locationId).then((target: TargetModel) => {
-      target.dateMonth = dateMonth;
-      target.locationId = locationId;
-      this.target.set(target);
-      return target;
-    });
-  }
+  // getTarget(dateMonth: string, locationId: string) {
+  //   return this.db.getTargetData(dateMonth, locationId).then((target: TargetModel) => {
+  //     target.dateMonth = dateMonth;
+  //     target.locationId = locationId;
+  //     this.target.set(target);
+  //     return target;
+  //   });
+  // }
   
-  getPayroll(dateMonth: string, locationId: string) {
+  getPayroll(dateMonth: any, locationId: string) {
+     
     return this.db.getPayrollData(dateMonth, locationId).then((payroll: PayrollModel) => {
       payroll.dateMonth = dateMonth;
       payroll.locationId = locationId;
@@ -115,29 +118,29 @@ export class ConfigurationsService {
     });
   }
 
-  getAllTarget() {
-    return this.db.getAllTarget().then((target: TargetModel[]) => {
-      let locations = target.map(targetTmp => targetTmp.locationId);
-      this.db.getLocations(locations).then((locations: LocationModel[]) => {
-        target = target.map((targetTmp: TargetModel) => {
-          let location = locations.find(location => location.documentId == targetTmp.locationId);
-          if (location !== undefined) {
-            return {
-              ...targetTmp,
-              locationId: targetTmp.locationId,
-              locationName: location.name
-            }
-          } else {
-            return {
-              ...targetTmp,
-              locationId: targetTmp.locationId,
-            }
-          }
-        })
-        this.allTarget.set(target);
-      })
-    });
-  }
+  // getAllTarget() {
+  //   return this.db.getAllTarget().then((target: TargetModel[]) => {
+  //     let locations = target.map(targetTmp => targetTmp.locationId);
+  //     this.db.getLocations(locations).then((locations: LocationModel[]) => {
+  //       target = target.map((targetTmp: TargetModel) => {
+  //         let location = locations.find(location => location.documentId == targetTmp.locationId);
+  //         if (location !== undefined) {
+  //           return {
+  //             ...targetTmp,
+  //             locationId: targetTmp.locationId,
+  //             locationName: location.name
+  //           }
+  //         } else {
+  //           return {
+  //             ...targetTmp,
+  //             locationId: targetTmp.locationId,
+  //           }
+  //         }
+  //       })
+  //       this.allTarget.set(target);
+  //     })
+  //   });
+  // }
 
   getAllPayrolls() {
     return this.db.getAllPayroll().then((payroll: PayrollModel[]) => {
@@ -191,13 +194,13 @@ export class ConfigurationsService {
     return this.db.updateSales(sale)
   }
 
-  addTarget(target: TargetModel): Promise<any> {
-    return this.db.setTarget(target)
-  }
+  // addTarget(target: TargetModel): Promise<any> {
+  //   return this.db.setTarget(target)
+  // }
 
-  editTarget(target: TargetModel) {
-    return this.db.updateTarget(target)
-  }
+  // editTarget(target: TargetModel) {
+  //   return this.db.updateTarget(target)
+  // }
 
   addPayroll(payroll: PayrollModel): Promise<any> {
     return this.db.setPayroll(payroll)

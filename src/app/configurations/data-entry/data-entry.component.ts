@@ -53,7 +53,7 @@ export class DataEntryComponent implements OnInit {
   service = inject(ConfigurationsService);
   public locationData: Signal<LocationModel[]> = computed(() => this.service.allLocations());
   date = new FormControl(moment());
-  dateMonth: string = '';
+  dateMonth: any;
   locationId: string = '';
   loadingTab: number = 0;
 
@@ -66,8 +66,8 @@ export class DataEntryComponent implements OnInit {
   ngOnInit(): void {
     this.date.valueChanges.subscribe((value) => { 
       if(value != null && value != undefined ) {   
-        const startOfMonth = new Date(value.year(), value.month(), 1);
-        this.dateMonth = this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
+        const startOfMonth = new Date(value.year(), value.month(), value.date());
+        this.dateMonth = startOfMonth;//this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
       }
     })
     this.setData(this.date.value) 
@@ -78,7 +78,7 @@ export class DataEntryComponent implements OnInit {
     const observerable = forkJoin({
       purchaseData: this.service.getPurchases(this.dateMonth, this.locationId),
       salesData: this.service.getSales(this.dateMonth, this.locationId),
-      targetData: this.service.getTarget(this.dateMonth, this.locationId),
+      // targetData: this.service.getTarget(this.dateMonth, this.locationId),
       payrollData: this.service.getPayroll(this.dateMonth, this.locationId)
     })
 
@@ -89,16 +89,16 @@ export class DataEntryComponent implements OnInit {
 
   setData(value: any) {
     if(value != null && value != undefined ) {   
-      const startOfMonth = new Date(value.year(), value.month(), 1);
-      this.dateMonth = this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
+      const startOfMonth = new Date(value.year(), value.month(), value.date());
+      this.dateMonth = startOfMonth;// this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
     }
   }
 
-  setMonthAndYear(normalizedMonthAndYear: Moment, datepicker: MatDatepicker<Moment>) {
-    const ctrlValue = this.date.value ?? moment();
-    ctrlValue.month(normalizedMonthAndYear.month());
-    ctrlValue.year(normalizedMonthAndYear.year());
-    this.date.setValue(ctrlValue);
-    datepicker.close();
-  }
+  // setMonthAndYear(normalizedMonthAndYear: Moment, datepicker: MatDatepicker<Moment>) {
+  //   const ctrlValue = this.date.value ?? moment();
+  //   ctrlValue.month(normalizedMonthAndYear.month());
+  //   ctrlValue.year(normalizedMonthAndYear.year());
+  //   this.date.setValue(ctrlValue);
+  //   datepicker.close();
+  // }
 }

@@ -24,10 +24,10 @@ import { MatDividerModule } from "@angular/material/divider";
 export class LocationComponent implements OnInit {
   service = inject(ConfigurationsService);
   public locationData: Signal<LocationModel[]> = computed(() => this.service.allLocations());
-  public displayedColumnObject: any[] = [{ key: 'id', header: 'Id' }, { key: 'name', header: 'Name' }]
+  public displayedColumnObject: any[] = [{ key: 'id', header: 'Id' }, { key: 'name', header: 'Name' }, { key: 'dcp', header: 'DCP' }, { key: 'donut', header: 'Donut' }, { key: 'pepsi', header: 'Pepsi' }, { key: 'workmanComp', header: 'Workman Comp' }, { key: 'foodPlusLabour', header: 'Food Plus Labour' }]
   public displayedColumns: string[] = this.displayedColumnObject.map((column) => column.key)
   selectedRowId: any= '';
-  selectedRowObj: LocationModel = { id: 0, name: '', documentId: '' };
+  selectedRowObj: LocationModel = { id: 0, name: '', documentId: '', dcp: 0, donut: 0, pepsi: 0, workmanComp: 0, foodPlusLabour: 0 };
 
   constructor(public dialog: MatDialog) {
     this.service.updateLable("Location");
@@ -45,7 +45,7 @@ export class LocationComponent implements OnInit {
     
     if(row.id == this.selectedRowId) { 
       this.selectedRowId = ''
-      this.selectedRowObj = { id: 0, name: '', documentId: '' }
+      this.selectedRowObj = { id: 0, name: '', documentId: '', dcp: 0, donut: 0, pepsi: 0, workmanComp: 0, foodPlusLabour: 0}
       return
     }
 

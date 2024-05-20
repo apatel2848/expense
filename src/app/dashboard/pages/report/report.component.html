@@ -6,13 +6,21 @@
         <mat-card-title>Weekly Food Report</mat-card-title>
         <mat-card-actions>
           <mat-form-field>
-            <mat-label>Month and Year</mat-label>
-            <input matInput [matDatepicker]="dp" [formControl]="date">
-            <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
-            <mat-datepicker #dp startView="multi-year" (monthSelected)="setMonthAndYear($event, dp)"
-              panelClass="example-month-picker">
-            </mat-datepicker>
-          </mat-form-field> 
+            <mat-label>Enter a date range</mat-label>
+            <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+              <input matStartDate formControlName="start" placeholder="Start date">
+              <input matEndDate formControlName="end" placeholder="End date">
+            </mat-date-range-input> 
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          
+            @if (range.controls.start.hasError('matStartDateInvalid')) {
+              <mat-error>Invalid start date</mat-error>
+            }
+            @if (range.controls.end.hasError('matEndDateInvalid')) {
+              <mat-error>Invalid end date</mat-error>
+            }
+          </mat-form-field>
         </mat-card-actions>
       </mat-card-header>
       <mat-card-content>

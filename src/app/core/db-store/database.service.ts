@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import {   addDoc, collection, doc, getDocs, getFirestore, orderBy, query,  updateDoc, where } from "firebase/firestore";
+import {   addDoc, collection, doc, getDocs, getFirestore, orderBy, query,  updateDoc, where, Timestamp  } from "firebase/firestore";
 import { FireTable } from "../constants/tables"
 import { environment } from "../../../environments/environment";
 import { initializeApp } from "firebase/app";
@@ -9,6 +9,7 @@ import { SalesModel } from "../models/sales.model";
 import { PurchaseModel } from "../models/purchase.model";
 import { TargetModel } from "../models/target.model"; 
 import { PayrollModel } from "../models/payroll.model"; 
+
 
 @Injectable({
     providedIn: 'root',
@@ -63,18 +64,23 @@ export class DBStore {
                 ...location,
                 name: location['name'],
                 id: location['id'],
-                documentId: documentSnapshot.id
+                documentId: documentSnapshot.id,
+                dcp: location['dcp'],
+                donut: location['donut'],
+                pepsi: location['pepsi'],
+                workmanComp: location['workmanComp'],
+                foodPlusLabour: location['foodPlusLabour']
             })
         } 
         return allLocations;
     } 
 
     async setLocation(location: LocationModel) {
-          addDoc(collection(this.db, FireTable.LOCATION_COLLECTION), { name: location.name, id: location.id})
+          addDoc(collection(this.db, FireTable.LOCATION_COLLECTION), { name: location.name, id: location.id, dcp: location.dcp, donut: location.donut, pepsi: location.pepsi, workmanComp: location.workmanComp, foodPlusLabour: location.foodPlusLabour })
     }
 
     async updateLocation(location: LocationModel) { 
-        updateDoc(doc(this.db, `${FireTable.LOCATION_COLLECTION}/${location.documentId}`), { name: location.name, id: location.id})
+        updateDoc(doc(this.db, `${FireTable.LOCATION_COLLECTION}/${location.documentId}`), { name: location.name, id: location.id, dcp: location.dcp, donut: location.donut, pepsi: location.pepsi, workmanComp: location.workmanComp, foodPlusLabour: location.foodPlusLabour })
     }
 
     async setPurchase(purchase: PurchaseModel): Promise<any> {
@@ -100,16 +106,16 @@ export class DBStore {
     }
 
     
-    async setTarget(target: TargetModel) : Promise<any> {
-        return  addDoc(collection(this.db, FireTable.TARGET_COLLECTION), { dateMonth: target.dateMonth,  locationId: target.locationId, dcp: target.dcp, donut: target.donut, pepsi: target.pepsi, foodPlusLabour: target.foodPlusLabour, workmanComp: target.workmanComp})
-        .then((docRef) => { 
-            return docRef.id
-        })
-    }
+    // async setTarget(target: TargetModel) : Promise<any> {
+    //     return  addDoc(collection(this.db, FireTable.TARGET_COLLECTION), { dateMonth: target.dateMonth,  locationId: target.locationId, dcp: target.dcp, donut: target.donut, pepsi: target.pepsi, foodPlusLabour: target.foodPlusLabour, workmanComp: target.workmanComp})
+    //     .then((docRef) => { 
+    //         return docRef.id
+    //     })
+    // }
 
-    async updateTarget(target: TargetModel) { 
-        updateDoc(doc(this.db, `${FireTable.TARGET_COLLECTION}/${target.id}`), { dateMonth: target.dateMonth, locationId: target.locationId, dcp: target.dcp, donut: target.donut, pepsi: target.pepsi, foodPlusLabour: target.foodPlusLabour, workmanComp: target.workmanComp})
-    }
+    // async updateTarget(target: TargetModel) { 
+    //     updateDoc(doc(this.db, `${FireTable.TARGET_COLLECTION}/${target.id}`), { dateMonth: target.dateMonth, locationId: target.locationId, dcp: target.dcp, donut: target.donut, pepsi: target.pepsi, foodPlusLabour: target.foodPlusLabour, workmanComp: target.workmanComp})
+    // }
 
     async setPayroll(payroll: PayrollModel) : Promise<any> {
         return  addDoc(collection(this.db, FireTable.PAYROLL_COLLECTION), { dateMonth: payroll.dateMonth,  locationId: payroll.locationId, expenses: payroll.expenses, managerHours: payroll.managerHours, trainingHours: payroll.trainingHours, totalLaborHours: payroll.totalLaborHours, targetAmount: payroll.targetAmount, otherExpenses: payroll.otherExpenses, maintenance: payroll.maintenance, taxes: payroll.taxes, workmanComp: payroll.workmanComp, totalExpenses: payroll.totalExpenses, percentOfTaxes: payroll.percentOfTaxes})
@@ -133,7 +139,12 @@ export class DBStore {
                 ...location,
                 name: location['name'],
                 id: location['id'],
-                documentId: documentSnapshot.id
+                documentId: documentSnapshot.id,
+                dcp: location['dcp'],
+                donut: location['donut'],
+                pepsi: location['pepsi'],
+                workmanComp: location['workmanComp'],
+                foodPlusLabour: location['foodPlusLabour']
             })
         } 
         return allLocations;
@@ -160,10 +171,10 @@ export class DBStore {
         return allPurchases;
     } 
     
-    async getPurchaseData(dateMonth: string, locationId: string) {
-        const purchases = query(collection(this.db, FireTable.PURCHASE_COLLECTION), where("dateMonth", '==' , dateMonth), where("locationId", '==' , locationId));
+    async getPurchaseData(dateMonth: any, locationId: string) { 
+        const purchases = query(collection(this.db, FireTable.PURCHASE_COLLECTION), where("locationId", '==' , locationId), where("dateMonth", '>=' , dateMonth), where("dateMonth", '<=' , dateMonth));
         const querySnapshot = await getDocs(purchases);
-
+ 
         let allPurchases: PurchaseModel[] = [];
         for (const documentSnapshot of querySnapshot.docs) {
             const purchase = documentSnapshot.data();
@@ -200,10 +211,10 @@ export class DBStore {
         return allSales;
     } 
     
-    async getSaleData(dateMonth: string, locationId: string) {
-        const sales = query(collection(this.db, FireTable.SALES_COLLECTION), where("dateMonth", '==' , dateMonth), where("locationId", '==' , locationId));
+    async getSaleData(dateMonth: any, locationId: string) {
+        const sales = query(collection(this.db, FireTable.SALES_COLLECTION), where("locationId", '==' , locationId), where("dateMonth", '>=' , dateMonth), where("dateMonth", '<=' , dateMonth));
         const querySnapshot = await getDocs(sales);
-
+         
         let allSales: SalesModel[] = [];
         for (const documentSnapshot of querySnapshot.docs) {
             const sale = documentSnapshot.data();
@@ -219,51 +230,51 @@ export class DBStore {
         return allSales.length > 0 ? allSales[0] : { id:'', dateMonth: '',  netSales: 0, locationId:'', locationName:''};
     }
 
-    async getAllTarget() {
-        const target = query(collection(this.db, FireTable.TARGET_COLLECTION));
-        const querySnapshot = await getDocs(target);
+    // async getAllTarget() {
+    //     const target = query(collection(this.db, FireTable.TARGET_COLLECTION));
+    //     const querySnapshot = await getDocs(target);
 
-        let allTargets: TargetModel[] = [];
-        for (const documentSnapshot of querySnapshot.docs) {
-            const targetTmp = documentSnapshot.data();
-            await allTargets.push({
-                ...targetTmp, 
-                id: documentSnapshot.id,
-                dateMonth: targetTmp['dateMonth'],
-                dcp: targetTmp['dcp'], 
-                donut: targetTmp['donut'], 
-                pepsi: targetTmp['pepsi'], 
-                foodPlusLabour: targetTmp['foodPlusLabour'], 
-                workmanComp: targetTmp['workmanComp'], 
-                locationId: targetTmp['locationId'],      
-                locationName: ''
-            })
-        } 
-        return allTargets;
-    } 
+    //     let allTargets: TargetModel[] = [];
+    //     for (const documentSnapshot of querySnapshot.docs) {
+    //         const targetTmp = documentSnapshot.data();
+    //         await allTargets.push({
+    //             ...targetTmp, 
+    //             id: documentSnapshot.id,
+    //             dateMonth: targetTmp['dateMonth'],
+    //             dcp: targetTmp['dcp'], 
+    //             donut: targetTmp['donut'], 
+    //             pepsi: targetTmp['pepsi'], 
+    //             foodPlusLabour: targetTmp['foodPlusLabour'], 
+    //             workmanComp: targetTmp['workmanComp'], 
+    //             locationId: targetTmp['locationId'],      
+    //             locationName: ''
+    //         })
+    //     } 
+    //     return allTargets;
+    // } 
     
-    async getTargetData(dateMonth: string, locationId: string) {
-        const target = query(collection(this.db, FireTable.TARGET_COLLECTION), where("dateMonth", '==' , dateMonth), where("locationId", '==' , locationId));
-        const querySnapshot = await getDocs(target);
+    // async getTargetData(dateMonth: string, locationId: string) {
+    //     const target = query(collection(this.db, FireTable.TARGET_COLLECTION), where("dateMonth", '==' , dateMonth), where("locationId", '==' , locationId));
+    //     const querySnapshot = await getDocs(target);
 
-        let allTargets: TargetModel[] = [];
-        for (const documentSnapshot of querySnapshot.docs) {
-            const targetTmp = documentSnapshot.data();
-            await allTargets.push({
-                ...targetTmp, 
-                id: documentSnapshot.id,
-                dateMonth: targetTmp['dateMonth'],
-                dcp: targetTmp['dcp'], 
-                donut: targetTmp['donut'], 
-                pepsi: targetTmp['pepsi'], 
-                foodPlusLabour: targetTmp['foodPlusLabour'], 
-                workmanComp: targetTmp['workmanComp'], 
-                locationId: targetTmp['locationId'],      
-                locationName: ''
-            })
-        } 
-        return allTargets.length > 0 ? allTargets[0] : { id:'', dateMonth: '', dcp: 0, donut:0, foodPlusLabour:0, pepsi:0, workmanComp: 0, locationId:'', locationName:'' };
-    }
+    //     let allTargets: TargetModel[] = [];
+    //     for (const documentSnapshot of querySnapshot.docs) {
+    //         const targetTmp = documentSnapshot.data();
+    //         await allTargets.push({
+    //             ...targetTmp, 
+    //             id: documentSnapshot.id,
+    //             dateMonth: targetTmp['dateMonth'],
+    //             dcp: targetTmp['dcp'], 
+    //             donut: targetTmp['donut'], 
+    //             pepsi: targetTmp['pepsi'], 
+    //             foodPlusLabour: targetTmp['foodPlusLabour'], 
+    //             workmanComp: targetTmp['workmanComp'], 
+    //             locationId: targetTmp['locationId'],      
+    //             locationName: ''
+    //         })
+    //     } 
+    //     return allTargets.length > 0 ? allTargets[0] : { id:'', dateMonth: '', dcp: 0, donut:0, foodPlusLabour:0, pepsi:0, workmanComp: 0, locationId:'', locationName:'' };
+    // }
 
     async getAllPayroll() {
         const payroll = query(collection(this.db, FireTable.PAYROLL_COLLECTION));
@@ -294,10 +305,10 @@ export class DBStore {
         return allPayroll;
     }
 
-    async getPayrollData(dateMonth: string, locationId: string) {
-        const payroll = query(collection(this.db, FireTable.PAYROLL_COLLECTION), where("dateMonth", '==' , dateMonth), where("locationId", '==' , locationId));
+    async getPayrollData(dateMonth: any, locationId: string) {
+        const payroll = query(collection(this.db, FireTable.PAYROLL_COLLECTION), where("locationId", '==' , locationId), where("dateMonth", '>=' , dateMonth), where("dateMonth", '<=' , dateMonth));
         const querySnapshot = await getDocs(payroll);
-
+         
         let allPayroll: PayrollModel[] = [];
         for (const documentSnapshot of querySnapshot.docs) {
             const payrollTmp = documentSnapshot.data();
@@ -323,8 +334,8 @@ export class DBStore {
         return allPayroll.length > 0 ? allPayroll[0] : { id:'', dateMonth: '', locationId:'', locationName:'', expenses: 0, maintenance: 0, managerHours: 0, otherExpenses: 0, percentOfTaxes: 0, targetAmount: 0, taxes: 0, totalExpenses: 0, totalLaborHours: 0, trainingHours: 0, workmanComp: 0};
     }
 
-    async getPurchase(date: any) { 
-        const purchases = query(collection(this.db, FireTable.PURCHASE_COLLECTION), where("dateMonth", '==' , date));
+    async getPurchase(startDate: any, endDate: any) { 
+        const purchases = query(collection(this.db, FireTable.PURCHASE_COLLECTION), where("dateMonth", '>=' , startDate), where("dateMonth", '<=' , endDate));
         const querySnapshot = await getDocs(purchases);
 
         let allPurchases: PurchaseModel[] = [];
@@ -344,8 +355,8 @@ export class DBStore {
         return allPurchases;
     }
 
-    async getSales(date: any) {
-        const sales = query(collection(this.db, FireTable.SALES_COLLECTION), where("dateMonth", '==' , date));
+    async getSales(startDate: any, endDate: any) {
+        const sales = query(collection(this.db, FireTable.SALES_COLLECTION), where("dateMonth", '>=' , startDate), where("dateMonth", '<=' , endDate));
         const querySnapshot = await getDocs(sales);
 
         let allSales: SalesModel[] = [];
@@ -363,31 +374,31 @@ export class DBStore {
         return allSales;
     }
 
-    async getTarget(date: any) {
-        const targets = query(collection(this.db, FireTable.TARGET_COLLECTION), where("dateMonth", '==' , date));
-        const querySnapshot = await getDocs(targets);
+    // async getTarget(startDate: any, endDate: any) {
+    //     const targets = query(collection(this.db, FireTable.TARGET_COLLECTION), where("dateMonth", '>=' , startDate), where("dateMonth", '<=' , endDate));
+    //     const querySnapshot = await getDocs(targets);
 
-        let allTargets: TargetModel[] = [];
-        for (const documentSnapshot of querySnapshot.docs) {
-            const target = documentSnapshot.data();
-            await allTargets.push({
-                ...target,
-                dateMonth: target['dateMonth'],
-                id: documentSnapshot.id, 
-                dcp: target['dcp'],
-                donut: target['donut'],
-                locationId: target['locationId'],
-                pepsi: target['pepsi'],
-                foodPlusLabour: target['foodPlusLabour'],
-                workmanComp: target['workmanComp'],
-                locationName: ''
-            })
-        } 
-        return allTargets;
-    }
+    //     let allTargets: TargetModel[] = [];
+    //     for (const documentSnapshot of querySnapshot.docs) {
+    //         const target = documentSnapshot.data();
+    //         await allTargets.push({
+    //             ...target,
+    //             dateMonth: target['dateMonth'],
+    //             id: documentSnapshot.id, 
+    //             dcp: target['dcp'],
+    //             donut: target['donut'],
+    //             locationId: target['locationId'],
+    //             pepsi: target['pepsi'],
+    //             foodPlusLabour: target['foodPlusLabour'],
+    //             workmanComp: target['workmanComp'],
+    //             locationName: ''
+    //         })
+    //     } 
+    //     return allTargets;
+    // }
 
-    async getPayroll(date: any) {
-        const payrolls = query(collection(this.db, FireTable.PAYROLL_COLLECTION), where("dateMonth", '==' , date));
+    async getPayroll(startDate: any, endDate: any) {
+        const payrolls = query(collection(this.db, FireTable.PAYROLL_COLLECTION), where("dateMonth", '>=' , startDate), where("dateMonth", '<=' , endDate));
         const querySnapshot = await getDocs(payrolls);
 
         let allPayrolls: PayrollModel[] = [];

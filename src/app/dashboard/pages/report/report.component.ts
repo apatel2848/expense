@@ -6,7 +6,7 @@ import { MatChipsModule } from '@angular/material/chips'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatDatepickerModule, MatDatepicker } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashboardService } from '../../../core/services/dashboard.service'; 
 import { ColumnHeaderModel, DashboardModel } from '../../../core/models/dashboard.model';
 import { MY_FORMATS } from '../../../core/constants/date-format';
@@ -51,7 +51,10 @@ export class ReportComponent implements OnInit {
   public reportData: Signal<DashboardModel> = computed(() => this.dashboardService.reportReturnData());
   public displayedColumns: Signal<string[]> = computed(() => this.reportData().columnHeaders.map((column) => column.id));
   public displayedColumnObject: Signal<ColumnHeaderModel[]> = computed(() => this.reportData().columnHeaders);
-  date = new FormControl(moment());
+  range = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+  }); 
   loader: boolean = false;
 
   constructor(private dashboardService: DashboardService, private _datePipe: DatePipe) {
@@ -59,33 +62,35 @@ export class ReportComponent implements OnInit {
   }
 
 
-  setMonthAndYear(normalizedMonthAndYear: Moment, datepicker: MatDatepicker<Moment>) {
-    const ctrlValue = this.date.value ?? moment();
-    ctrlValue.month(normalizedMonthAndYear.month());
-    ctrlValue.year(normalizedMonthAndYear.year());
-    this.date.setValue(ctrlValue);
-    datepicker.close();
-  }
+  // setMonthAndYear(normalizedMonthAndYear: Moment, datepicker: MatDatepicker<Moment>) {
+  //   const ctrlValue = this.range.value ?? moment();
+  //   ctrlValue.month(normalizedMonthAndYear.month());
+  //   ctrlValue.year(normalizedMonthAndYear.year());
+  //   this.range.setValue(ctrlValue);
+  //   datepicker.close();
+  // }
+
   getColumnDisplayName(column: string) {
     return this.displayedColumnObject().find(x => x.id == column)?.displayName
   }
 
-  getReport(dateValue: any) { 
+  getReport(startDateValue: any, toDateValue: any) { 
 
-    if(dateValue != null && dateValue != undefined ) { 
+    if(startDateValue != null && startDateValue != undefined && toDateValue != null && toDateValue != undefined) { 
       this.loader = true;
-      const startOfMonth = new Date(dateValue.year(), dateValue.month(), 1);
-      this.dashboardService.getReportData(this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')).subscribe((data :ReportModel) => {  
+      const startOfDate = new Date(startDateValue.year(), startDateValue.month(), startDateValue.date());
+      const toOfDate = new Date(toDateValue.year(), toDateValue.month(), toDateValue.date());
+      this.dashboardService.getReportData(startOfDate, toOfDate).subscribe((data :ReportModel) => {  
         this.loader = false;
       })
     }
   }
 
   ngOnInit(): void {
-      this.date.valueChanges.subscribe((value) => { 
-        this.getReport(value)
+      this.range.valueChanges.subscribe((value) => { 
+        this.getReport(value.start, value.end)  
       })
 
-      this.getReport(this.date.value)
+      //this.getReport(this.range.value.start, this.range.value.end)
    } 
 }
