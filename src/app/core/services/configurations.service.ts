@@ -194,6 +194,10 @@ export class ConfigurationsService {
     return this.db.updateSales(sale)
   }
 
+  deleteLocation(location: LocationModel) {
+    return this.db.deleteLocation(location)
+  }
+
   // addTarget(target: TargetModel): Promise<any> {
   //   return this.db.setTarget(target)
   // }

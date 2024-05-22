@@ -1,10 +1,11 @@
-import { Component, OnInit, Signal, computed, inject, signal } from "@angular/core";
+import { Component, Inject, OnInit, Signal, computed, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ConfigurationsService } from "../../core/services/configurations.service";
 import { LocationModel } from "../../core/models/location.model";
 import { MatTableModule } from "@angular/material/table";
 import { MatButtonModule } from "@angular/material/button";
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogTitle,
+  MatDialogContent  } from '@angular/material/dialog';
 import { AddDialogComponent } from "./add-dialog";
 import { EditDialogComponent } from "./edit-dialog";
 import { PurchaseComponent } from "../purchase";
@@ -57,9 +58,7 @@ export class LocationComponent implements OnInit {
     const dialogRef = this.dialog.open(AddDialogComponent);
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.service.getAllLocations()
-      }
+      this.service.getAllLocations()
     });
   }
 
@@ -67,10 +66,32 @@ export class LocationComponent implements OnInit {
     const dialogRef = this.dialog.open(EditDialogComponent, { data: Object.assign({}, this.selectedRowObj)});
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.service.getAllLocations()
-      }
+      this.service.getAllLocations()
     });
   }
 
+  confirmDialog() {
+    const dialogRef = this.dialog.open(DialogConfirmComponant, { data: Object.assign({}, this.selectedRowObj)});
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.service.getAllLocations()
+    });
+  }
+
+}
+
+@Component({
+  selector: 'dialog-confirm', 
+  templateUrl: './dialog-confirm.html',
+  standalone: true,
+  imports: [MatButtonModule, MatDialogModule],
+})
+export class DialogConfirmComponant {
+  service = inject(ConfigurationsService);
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: LocationModel) {} 
+
+  deleteLocation(){
+    this.service.deleteLocation(this.data)
+  }
 }

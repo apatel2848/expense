@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import {   addDoc, collection, doc, getDocs, getFirestore, orderBy, query,  updateDoc, where, Timestamp  } from "firebase/firestore";
+import {   addDoc, collection, doc, getDocs, getFirestore, orderBy, query,  updateDoc, where, Timestamp, deleteDoc  } from "firebase/firestore";
 import { FireTable } from "../constants/tables"
 import { environment } from "../../../environments/environment";
 import { initializeApp } from "firebase/app";
@@ -77,6 +77,10 @@ export class DBStore {
 
     async setLocation(location: LocationModel) {
           addDoc(collection(this.db, FireTable.LOCATION_COLLECTION), { name: location.name, id: location.id, dcp: location.dcp, donut: location.donut, pepsi: location.pepsi, workmanComp: location.workmanComp, foodPlusLabour: location.foodPlusLabour })
+    }
+
+    async deleteLocation(location: LocationModel) {
+        deleteDoc(doc(this.db, `${FireTable.LOCATION_COLLECTION}/${location.documentId}`))
     }
 
     async updateLocation(location: LocationModel) { 
