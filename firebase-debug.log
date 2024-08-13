@@ -1,0 +1,25 @@
+[debug] [2024-08-13T22:15:35.078Z] ----------------------------------------------------------------------
+[debug] [2024-08-13T22:15:35.081Z] Command:       /Users/atitpatel/.volta/tools/image/node/20.16.0/bin/node /Users/atitpatel/.nvm/versions/node/v22.1.0/bin/firebase init
+[debug] [2024-08-13T22:15:35.081Z] CLI Version:   13.13.3
+[debug] [2024-08-13T22:15:35.082Z] Platform:      darwin
+[debug] [2024-08-13T22:15:35.082Z] Node Version:  v20.16.0
+[debug] [2024-08-13T22:15:35.082Z] Time:          Tue Aug 13 2024 18:15:35 GMT-0400 (Eastern Daylight Time)
+[debug] [2024-08-13T22:15:35.082Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-08-13T22:15:35.144Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-08-13T22:15:35.144Z] > authorizing via signed-in user (patel.atit@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/atitpatel/toast/playground/expense
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
