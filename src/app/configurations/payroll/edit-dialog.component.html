@@ -1,54 +1,54 @@
 <div class="relative bg-white shadow dark:bg-gray-700"> 
     <form>
-      <div class="grid gap-4 mb-4 grid-cols-3">    
+      <div class="grid gap-4 mb-4 grid-cols-3">     
         <div class="col-span-1">
           <label for="expenses" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Expenses</label>
-          <input [(ngModel)]="data.expenses" type="number" name="expenses" id="expenses" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          <input [(ngModel)]="payroll.expenses" type="number" name="expenses" id="expenses" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
         </div> 
         <div class="col-span-1">
           <label for="maintenance" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Maintenance</label>
-          <input [(ngModel)]="data.maintenance" type="number" name="maintenance" id="maintenance" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          <input [(ngModel)]="payroll.maintenance" type="number" name="maintenance" id="maintenance" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
         </div> 
         <div class="col-span-1">
           <label for="managerHours" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Manager Hours</label>
-          <input [(ngModel)]="data.managerHours" type="number" name="managerHours" id="managerHours" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          <input [(ngModel)]="payroll.managerHours" type="number" name="managerHours" id="managerHours" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
         </div> 
         <div class="col-span-1">
           <label for="otherExpenses" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Other Expenses</label>
-          <input [(ngModel)]="data.otherExpenses" type="number" name="otherExpenses" id="otherExpenses" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          <input [(ngModel)]="payroll.otherExpenses" type="number" name="otherExpenses" id="otherExpenses" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
         </div> 
         <div class="col-span-1">
           <label for="percentOfTaxes" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">% Of Taxes</label>
-          <input [(ngModel)]="data.percentOfTaxes" type="number" name="percentOfTaxes" id="percentOfTaxes" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          <input [(ngModel)]="payroll.percentOfTaxes" type="number" name="percentOfTaxes" id="percentOfTaxes" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
         </div> 
         <div class="col-span-1">
           <label for="targetAmount" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Target Amount</label>
-          <input [(ngModel)]="data.targetAmount" type="number" name="targetAmount" id="targetAmount" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          <input [(ngModel)]="payroll.targetAmount" type="number" name="targetAmount" id="targetAmount" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
         </div> 
         <div class="col-span-1">
           <label for="taxes" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Taxes</label>
-          <input [(ngModel)]="data.taxes" type="number" name="taxes" id="taxes" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          <input [(ngModel)]="payroll.taxes" type="number" name="taxes" id="taxes" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
         </div> 
         <div class="col-span-1">
           <label for="totalExpenses" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Total Expenses</label>
-          <input [(ngModel)]="data.totalExpenses" type="number" name="totalExpenses" id="totalExpenses" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          <input [(ngModel)]="payroll.totalExpenses" type="number" name="totalExpenses" id="totalExpenses" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
         </div> 
         <div class="col-span-1">
           <label for="totalLaborHours" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Total Labor Hours</label>
-          <input [(ngModel)]="data.totalLaborHours" type="number" name="totalLaborHours" id="totalLaborHours" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          <input [(ngModel)]="payroll.totalLaborHours" type="number" name="totalLaborHours" id="totalLaborHours" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
         </div> 
         <div class="col-span-1">
           <label for="trainingHours" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Training Hours</label>
-          <input [(ngModel)]="data.trainingHours" type="number" name="trainingHours" id="trainingHours" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          <input [(ngModel)]="payroll.trainingHours" type="number" name="trainingHours" id="trainingHours" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
         </div> 
         <div class="col-span-1">
           <label for="workmanComp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Workman Comp</label>
-          <input [(ngModel)]="data.workmanComp" type="number" name="workmanComp" id="workmanComp" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
+          <input [(ngModel)]="payroll.workmanComp" type="number" name="workmanComp" id="workmanComp" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type location name" required="">
         </div>  
     </div> 
     </form> 
     <div class="flex gap-2 justify-end">
-      <button type="button" (click)="editLocation()" style="padding: 20px;line-height: 1px;"
+      <button type="button" (click)="upsertPayroll()" style="padding: 20px;line-height: 1px;"
         class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
         Save
     </button> 

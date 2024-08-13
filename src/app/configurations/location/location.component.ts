@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, Signal, computed, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ConfigurationsService } from "../../core/services/configurations.service";
-import { LocationModel } from "../../core/models/location.model";
+import { Location } from "../../core/models/location.model";
 import { MatTableModule } from "@angular/material/table";
 import { MatButtonModule } from "@angular/material/button";
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogTitle,
@@ -24,15 +24,15 @@ import { MatDividerModule } from "@angular/material/divider";
 })
 export class LocationComponent implements OnInit {
   service = inject(ConfigurationsService);
-  public locationData: Signal<LocationModel[]> = computed(() => this.service.allLocations());
-  public displayedColumnObject: any[] = [{ key: 'id', header: 'Id' }, { key: 'name', header: 'Name' }, { key: 'dcp', header: 'DCP' }, { key: 'donut', header: 'Donut' }, { key: 'pepsi', header: 'Pepsi' }, { key: 'workmanComp', header: 'Workman Comp' }, { key: 'foodPlusLabour', header: 'Food Plus Labour' }]
+  public locationData: Signal<Location[]> = computed(() => this.service.allLocations());
+  public displayedColumnObject: any[] = [{ key: 'id', header: 'Id' }, { key: 'name', header: 'Name' }, { key: 'dcp', header: 'DCP' }, { key: 'donut', header: 'Donut' }, { key: 'pepsi', header: 'Pepsi' }, { key: 'workmanComp', header: 'Workman Comp' }, { key: 'foodPlusLabor', header: 'Food Plus Labor' }]
   public displayedColumns: string[] = this.displayedColumnObject.map((column) => column.key)
-  selectedRowId: any= '';
-  selectedRowObj: LocationModel = { id: 0, name: '', documentId: '', dcp: 0, donut: 0, pepsi: 0, workmanComp: 0, foodPlusLabour: 0 };
+  selectedRowId: string= '';
+  selectedRowObj: Location = new Location()
 
   constructor(public dialog: MatDialog) {
     this.service.updateLable("Location");
-    this.service.getAllLocations()
+    this.service.getLocations()
   }
 
   ngOnInit(): void {
@@ -43,14 +43,15 @@ export class LocationComponent implements OnInit {
   }
 
   selectRow(row: any) { 
-    
-    if(row.id == this.selectedRowId) { 
-      this.selectedRowId = ''
-      this.selectedRowObj = { id: 0, name: '', documentId: '', dcp: 0, donut: 0, pepsi: 0, workmanComp: 0, foodPlusLabour: 0}
-      return
-    }
+    console.log(row)
+    console.log(this.selectedRowId)
+    // if(row.id == this.selectedRowId) { 
+    //   this.selectedRowId = ''
+    //   this.selectedRowObj = new Location()
+    //   return
+    // }
 
-    this.selectedRowId = row.documentId
+    this.selectedRowId = row.id
     this.selectedRowObj = row
   }
 
@@ -58,7 +59,7 @@ export class LocationComponent implements OnInit {
     const dialogRef = this.dialog.open(AddDialogComponent);
 
     dialogRef.afterClosed().subscribe(result => {
-      this.service.getAllLocations()
+      this.service.getLocations()
     });
   }
 
@@ -66,15 +67,15 @@ export class LocationComponent implements OnInit {
     const dialogRef = this.dialog.open(EditDialogComponent, { data: Object.assign({}, this.selectedRowObj)});
 
     dialogRef.afterClosed().subscribe(result => {
-      this.service.getAllLocations()
+      this.service.getLocations()
     });
   }
 
-  confirmDialog() {
+  openDeleteDialog() {
     const dialogRef = this.dialog.open(DialogConfirmComponant, { data: Object.assign({}, this.selectedRowObj)});
 
     dialogRef.afterClosed().subscribe(result => {
-      this.service.getAllLocations()
+      this.service.getLocations()
     });
   }
 
@@ -89,7 +90,7 @@ export class LocationComponent implements OnInit {
 export class DialogConfirmComponant {
   service = inject(ConfigurationsService);
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: LocationModel) {} 
+  constructor(@Inject(MAT_DIALOG_DATA) public data: Location) {} 
 
   deleteLocation(){
     this.service.deleteLocation(this.data)

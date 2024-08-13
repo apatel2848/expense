@@ -1,10 +1,13 @@
 import { Injectable, WritableSignal, signal } from "@angular/core";
 import { DBStore } from "../db-store/database.service";
-import { LocationModel } from "../models/location.model";
-import { PurchaseModel } from "../models/purchase.model";
-import { SalesModel } from "../models/sales.model";
+import { Location } from "../models/location.model";
+import { Purchase } from "../models/purchase.model";
+import { Sales } from "../models/sales.model";
 import { TargetModel } from "../models/target.model";
-import { PayrollModel } from "../models/payroll.model";
+import { Payroll } from "../models/payroll.model";
+import { serverTimestamp, Timestamp } from "firebase/firestore";
+import { getuid } from "process";
+import { PayrollComponent } from "../../configurations/payroll";
 
 @Injectable({
   providedIn: 'root'
@@ -12,69 +15,72 @@ import { PayrollModel } from "../models/payroll.model";
 export class ConfigurationsService {
 
   public componentLable: WritableSignal<string> = signal<string>('');
-  public allLocations: WritableSignal<LocationModel[]> = signal<LocationModel[]>([]);
-  public allPurchases: WritableSignal<PurchaseModel[]> = signal<PurchaseModel[]>([]);
-  public allSales: WritableSignal<SalesModel[]> = signal<SalesModel[]>([]);
+  public allLocations: WritableSignal<Location[]> = signal<Location[]>([]);
+  public allPurchases: WritableSignal<Purchase[]> = signal<Purchase[]>([]);
+  public allSales: WritableSignal<Sales[]> = signal<Sales[]>([]);
   public allTarget: WritableSignal<TargetModel[]> = signal<TargetModel[]>([]);
-  public allPayroll: WritableSignal<PayrollModel[]> = signal<PayrollModel[]>([]);
+  public allPayroll: WritableSignal<Payroll[]> = signal<Payroll[]>([]);
   public dateMonth: WritableSignal<string> = signal<string>('');
   public locationId: WritableSignal<string> = signal<string>('');
-  public purchase: WritableSignal<PurchaseModel> = signal<PurchaseModel>({ id: '', dateMonth: '', dcp: 0, donut: 0, pepsi: 0, locationId: '', locationName: '' });
-  public sales: WritableSignal<SalesModel> = signal<SalesModel>({ id:'', dateMonth: '',  netSales: 0, locationId:'', locationName:''});
   public target: WritableSignal<TargetModel> = signal<TargetModel>({   dcp: 0, donut:0, foodPlusLabour:0, pepsi:0, workmanComp: 0 });
-  public payroll: WritableSignal<PayrollModel> = signal<PayrollModel>({ id:'', dateMonth: '', locationId:'', locationName:'', expenses: 0, maintenance: 0, managerHours: 0, otherExpenses: 0, percentOfTaxes: 0, targetAmount: 0, taxes: 0, totalExpenses: 0, totalLaborHours: 0, trainingHours: 0, workmanComp: 0});
 
-  constructor(private db: DBStore) { }
+  public location: WritableSignal<Location> = signal<Location>(new Location());
+  public payroll: WritableSignal<Payroll> = signal<Payroll>(new Payroll());
+  public purchase: WritableSignal<Purchase> = signal<Purchase>(new Purchase());
+  public sales: WritableSignal<Sales> = signal<Sales>(new Sales());
 
-  getAllLocations() {
-    return this.db.getAllLocations().then((locations: LocationModel[]) => {
-      this.allLocations.set(locations);
-    });
-  }
+  constructor(private db: DBStore) { } 
+
+  //#region Delete
+
+  // getAllLocations() {
+  //   return this.db.getAllLocations().then((locations: Location[]) => {
+  //     this.allLocations.set(locations);
+  //   });
+  // }
 
   getAllPurchases() {
-    return this.db.getAllPurchases().then((purchases: PurchaseModel[]) => {
+    return this.db.getAllPurchases().then((purchases: Purchase[]) => {
       let locations = purchases.map(purchase => purchase.locationId);
-      this.db.getLocations(locations).then((locations: LocationModel[]) => {
-        purchases = purchases.map((purchase: PurchaseModel) => {
-          let location = locations.find(location => location.documentId == purchase.locationId);
-          if (location !== undefined) {
-            return {
-              ...purchase,
-              locationId: purchase.locationId,
-              locationName: location.name
-            }
-          } else {
-            return {
-              ...purchase,
-              locationId: purchase.locationId,
-            }
-          }
-        })
+      this.db.getLocations1(locations).then((locations: Location[]) => {
+        // purchases = purchases.map((purchase: Purchase) => {
+        //   let location = locations.find(location => location.documentId == purchase.locationId);
+        //   if (location !== undefined) {
+        //     return {
+        //       ...purchase,
+        //       locationId: purchase.locationId,
+        //       //locationName: location.name
+        //     }
+        //   } else {
+        //     return {
+        //       ...purchase,
+        //       locationId: purchase.locationId,
+        //     }
+        //   }
+        // })
         this.allPurchases.set(purchases);
       })
     });
   }
 
-  getPurchases(dateMonth: any, locationId: string) {
-     
-    return this.db.getPurchaseData(dateMonth, locationId).then((purchase: PurchaseModel) => {
-      purchase.dateMonth = dateMonth;
-      purchase.locationId = locationId;
-      this.purchase.set(purchase);
-      return purchase;
-    });
-  }
+  // getPurchases(selectedDate: any, locationId: string) {
+  //   console.log(selectedDate)
+  //   return this.db.getPurchaseData(selectedDate, locationId).then((purchase: Purchase) => {
+  //     //purchase.dateMonth = selectedDate;
+  //     // purchase.locationId = locationId;
+  //     // this.purchase.set(purchase);
+  //     return purchase;
+  //   });
+  // }
 
-  getSales(dateMonth: any, locationId: string) {
+  // getSales(dateMonth: any, locationId: string) {
      
-    return this.db.getSaleData(dateMonth, locationId).then((sales: SalesModel) => {
-      sales.dateMonth = dateMonth;
-      sales.locationId = locationId;
-      this.sales.set(sales);
-      return sales;
-    });
-  }
+  //   return this.db.getSaleData(dateMonth, locationId).then((sales: Sales) => {
+  //     sales.locationId = locationId;
+  //     this.sales.set(sales);
+  //     return sales;
+  //   });
+  // }
   
   // getTarget(dateMonth: string, locationId: string) {
   //   return this.db.getTargetData(dateMonth, locationId).then((target: TargetModel) => {
@@ -85,35 +91,26 @@ export class ConfigurationsService {
   //   });
   // }
   
-  getPayroll(dateMonth: any, locationId: string) {
-     
-    return this.db.getPayrollData(dateMonth, locationId).then((payroll: PayrollModel) => {
-      payroll.dateMonth = dateMonth;
-      payroll.locationId = locationId;
-      this.payroll.set(payroll);
-      return payroll;
-    });
-  }
   getAllSales() {
-    return this.db.getAllSales().then((sales: SalesModel[]) => {
+    return this.db.getAllSales().then((sales: Sales[]) => {
       let locations = sales.map(sale => sale.locationId);
-      this.db.getLocations(locations).then((locations: LocationModel[]) => {
-        sales = sales.map((sale: SalesModel) => {
-          let location = locations.find(location => location.documentId == sale.locationId);
-          if (location !== undefined) {
-            return {
-              ...sale,
-              locationId: sale.locationId,
-              locationName: location.name
-            }
-          } else {
-            return {
-              ...sale,
-              locationId: sale.locationId,
-            }
-          }
-        })
-        this.allSales.set(sales);
+      this.db.getLocations1(locations).then((locations: Location[]) => {
+        // sales = sales.map((sale: Sales) => {
+        //   let location = locations.find(location => location.documentId == sale.locationId);
+        //   if (location !== undefined) {
+        //     return {
+        //       ...sale,
+        //       locationId: sale.locationId,
+        //       locationName: location.name
+        //     }
+        //   } else {
+        //     return {
+        //       ...sale,
+        //       locationId: sale.locationId,
+        //     }
+        //   }
+        // })
+        // this.allSales.set(sales);
       })
     });
   }
@@ -143,25 +140,25 @@ export class ConfigurationsService {
   // }
 
   getAllPayrolls() {
-    return this.db.getAllPayroll().then((payroll: PayrollModel[]) => {
+    return this.db.getAllPayroll().then((payroll: Payroll[]) => {
       let locations = payroll.map(payrollTmp => payrollTmp.locationId);
-      this.db.getLocations(locations).then((locations: LocationModel[]) => {
-        payroll = payroll.map((payrollTmp: PayrollModel) => {
-          let location = locations.find(location => location.documentId == payrollTmp.locationId);
-          if (location !== undefined) {
-            return {
-              ...payrollTmp,
-              locationId: payrollTmp.locationId,
-              locationName: location.name
-            }
-          } else {
-            return {
-              ...payrollTmp,
-              locationId: payrollTmp.locationId,
-            }
-          }
-        })
-        this.allPayroll.set(payroll);
+      this.db.getLocations1(locations).then((locations: Location[]) => {
+        // payroll = payroll.map((payrollTmp: Payroll) => {
+        //   let location = locations.find(location => location.documentId == payrollTmp.locationId);
+        //   if (location !== undefined) {
+        //     return {
+        //       ...payrollTmp,
+        //       locationId: payrollTmp.locationId,
+        //       locationName: location.name
+        //     }
+        //   } else {
+        //     return {
+        //       ...payrollTmp,
+        //       locationId: payrollTmp.locationId,
+        //     }
+        //   }
+        // })
+        // this.allPayroll.set(payroll);
       })
     });
   }
@@ -170,32 +167,18 @@ export class ConfigurationsService {
     return this.componentLable.set(lable);
   }
 
-  addLocation(location: LocationModel) {
-    return this.db.setLocation(location)
-  }
+  // addLocation(location: Location) {
+  //   return this.db.setLocation(location)
+  // }
 
-  editLocation(location: LocationModel) {
-    return this.db.updateLocation(location)
-  }
+ 
 
-  addPurchase(purchase: PurchaseModel): Promise<any> {
-    return this.db.setPurchase(purchase)
-  }
-
-  editPurchase(purchase: PurchaseModel) {
+  editPurchase(purchase: Purchase) {
     return this.db.updatePurchase(purchase)
   }
 
-  addSales(sale: SalesModel): Promise<any> {
-    return this.db.setSales(sale)
-  }
-
-  editSales(sale: SalesModel) {
+  editSales(sale: Sales) {
     return this.db.updateSales(sale)
-  }
-
-  deleteLocation(location: LocationModel) {
-    return this.db.deleteLocation(location)
   }
 
   // addTarget(target: TargetModel): Promise<any> {
@@ -206,11 +189,97 @@ export class ConfigurationsService {
   //   return this.db.updateTarget(target)
   // }
 
-  addPayroll(payroll: PayrollModel): Promise<any> {
-    return this.db.setPayroll(payroll)
+  // editPayroll(target: Payroll) {
+  //   return this.db.updatePayroll(target)
+  // }
+
+//#endregion
+
+  ////////////////////
+
+  //#region Payroll
+
+  getPayroll(date: string, locationId: string) {
+    return this.db.getPayrollData(date, locationId).then((payroll: Payroll) => {
+      this.payroll.set(payroll)
+      return payroll
+    });
   }
 
-  editPayroll(target: PayrollModel) {
-    return this.db.updatePayroll(target)
+  addPayroll(payroll: Payroll): Promise<any> {
+    console.log(payroll)
+    return this.db.addPayroll(payroll)
   }
+
+  editPayroll(payroll: Payroll) {
+    return this.db.editPayroll(payroll)
+  }
+
+  //#endregion
+
+  //#region Sales
+
+  addSales(sales: Sales): Promise<any> {
+    console.log(sales)
+    return this.db.setSales(sales)
+  }
+
+  getSales(date: string, locationId: string) {
+    return this.db.getSaleData(date, locationId).then((sales: Sales) => {
+      this.sales.set(sales);
+      return sales;
+    });
+  }
+
+  //#endregion
+
+  //#region Purchase
+
+  addPurchase(purchase: Purchase): Promise<any> {
+    console.log(purchase)
+    return this.db.addPurchase(purchase);
+  }
+
+  getPurchase(date: string, locationId: string) {
+    return this.db.getPurchase(date, locationId).then((purchase: Purchase) => {
+      this.purchase.set(purchase);
+      return purchase;
+    });
+  }
+
+  //#endregion
+
+  //#region Location
+
+  getLocations() {
+    return this.db.getLocations().then((locations: Location[]) => {
+      this.allLocations.set(locations);
+    });
+  }
+
+  getLocation(id: string)
+  {
+    return this.db.getLocation(id).then((location: any) => {
+      if(location != null)
+        this.location.set(location);
+    });
+  }
+  addLocation(location: Location) {
+    return this.db.addLocation(location)
+  }
+
+  editLocation(location: Location) {
+    let l = Object.assign(new Location(), location)
+    return this.db.editLocation(l)
+  }
+
+  deleteLocation(location: Location) {
+    return this.db.deleteLocation(location)
+  }
+  
+  //#endregion
 }
+ 
+
+
+

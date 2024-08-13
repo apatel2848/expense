@@ -6,7 +6,7 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatTableModule } from "@angular/material/table";
 import { MatButtonModule } from "@angular/material/button";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { SalesModel } from "../../core/models/sales.model";
+import { Sales } from "../../core/models/sales.model";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { MatDatepickerModule } from "@angular/material/datepicker";
@@ -29,7 +29,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class EditSalesDialogComponent implements OnInit {
   service = inject(ConfigurationsService);
-  @Input('data') data: SalesModel = { id:'', dateMonth: '', netSales: 0, locationId:'', locationName:''}; 
+  @Input('data') data: Sales = new Sales()
 
 
   constructor(private _snackBar: MatSnackBar) { }
@@ -38,9 +38,9 @@ export class EditSalesDialogComponent implements OnInit {
   } 
 
   editLocation() { 
-    if(this.data.id === '') 
+    if(this.data.id === undefined) 
        this.service.addSales(this.data).then((id: any) => { 
-        this.data.id = id;
+        // this.data.id = id;
         this._snackBar.open('Success', 'Close', {
           duration: 2000
         });;
@@ -72,7 +72,7 @@ export class EditSalesDialogComponent implements OnInit {
 export class SalesComponent implements OnInit {
   service = inject(ConfigurationsService);
  
-  selectedRowObj: Signal<SalesModel> = computed(() => this.service.sales());
+  selectedRowObj: Signal<Sales> = computed(() => this.service.sales());
 
   constructor() { }
 

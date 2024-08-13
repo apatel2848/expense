@@ -4,7 +4,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from "@angular/forms";
 import { ConfigurationsService } from "../../../core/services/configurations.service";
-import { LocationModel } from "../../../core/models/location.model";
+import { Location } from "../../../core/models/location.model";
 
 @Component({
   selector: "app-add-dialog",
@@ -16,7 +16,7 @@ import { LocationModel } from "../../../core/models/location.model";
 export class AddDialogComponent implements OnInit {
   service = inject(ConfigurationsService);
 
-  location: LocationModel = { id: 0, name: '', documentId: '', dcp: 0, donut: 0, pepsi: 0, workmanComp: 0, foodPlusLabour: 0};
+  location: Location = new Location()
 
   constructor() { }
 

@@ -2,14 +2,14 @@ import { Component, Inject, Input, OnInit, Signal, computed, inject } from "@ang
 import { CommonModule, DatePipe } from "@angular/common";
 import { MatCardModule } from "@angular/material/card";
 import { ConfigurationsService } from "../../core/services/configurations.service";
-import { LocationModel } from "../../core/models/location.model";
+import { Location } from "../../core/models/location.model";
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from "@angular/material/dialog";
 import { AddDialogComponent } from "../location/add-dialog";
 import { EditDialogComponent } from "../location/edit-dialog";
 import { MatTableModule } from "@angular/material/table";
 import { MatButtonModule } from "@angular/material/button";
 import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { PurchaseModel } from "../../core/models/purchase.model";
+import { Purchase } from "../../core/models/purchase.model";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import moment, { Moment } from "moment";
@@ -33,7 +33,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class EditPurchaseDialogComponent implements OnInit {
   service = inject(ConfigurationsService); 
-  @Input('data') data: PurchaseModel = { id:'', dateMonth: '', dcp:0, donut:0, pepsi:0, locationId:'', locationName:'' }; 
+  @Input('data') data: Purchase = new Purchase(); 
 
 
   constructor(private _snackBar: MatSnackBar) { }
@@ -42,7 +42,7 @@ export class EditPurchaseDialogComponent implements OnInit {
   }
  
   editLocation() { 
-    if(this.data.id === '') 
+    if(this.data.id === undefined) 
        this.service.addPurchase(this.data).then((id: any) => { 
         this.data.id = id;
         this._snackBar.open('Success', 'Close', {
@@ -79,7 +79,7 @@ export class PurchaseComponent implements OnInit {
   // @Input('dateMonth') dateMonth: string = '';
   // @Input('locationId') locationId: string = '';
  
-  selectedRowObj: Signal<PurchaseModel> = computed(() => this.service.purchase());
+  selectedRowObj: Signal<Purchase> = computed(() => this.service.purchase());
 
   constructor() { }
 

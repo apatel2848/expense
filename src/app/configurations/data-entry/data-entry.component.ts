@@ -12,16 +12,17 @@ import {MatTabsModule} from '@angular/material/tabs';
 import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
-import { MatDatepicker, MatDatepickerModule } from "@angular/material/datepicker";
+import { MatDatepicker, MatDatepickerInputEvent, MatDatepickerModule } from "@angular/material/datepicker";
 import { MatInputModule } from "@angular/material/input";
 import { provideNativeDateAdapter } from "@angular/material/core";
 import { provideMomentDateAdapter } from "@angular/material-moment-adapter";
 import { MY_FORMATS } from "../../core/constants/date-format";
 import { ConfigurationsService } from "../../core/services/configurations.service";
-import { LocationModel } from "../../core/models/location.model";
+import { Location } from "../../core/models/location.model";
 import moment, { Moment } from "moment";
 import { MatIconModule } from "@angular/material/icon";
 import { forkJoin } from "rxjs";
+import {Payroll} from "../../core/models/payroll.model";
 
 @Component({
   selector: "app-data-entry",
@@ -49,56 +50,57 @@ import { forkJoin } from "rxjs";
   ],
   providers: [provideNativeDateAdapter(), DatePipe, provideMomentDateAdapter(MY_FORMATS)]
 })
+
 export class DataEntryComponent implements OnInit { 
+  
   service = inject(ConfigurationsService);
-  public locationData: Signal<LocationModel[]> = computed(() => this.service.allLocations());
-  date = new FormControl(moment());
-  dateMonth: any;
+  public locationData: Signal<Location[]> = computed(() => this.service.allLocations());
+  dateControl = new FormControl(moment());
+  selectedDate: string = '';
   locationId: string = '';
   loadingTab: number = 0;
 
-
   constructor(private _datePipe: DatePipe) {
-    this.service.getAllLocations()
+    this.service.getLocations()
   }
 
   
   ngOnInit(): void {
-    this.date.valueChanges.subscribe((value) => { 
+    this.dateControl.valueChanges.subscribe((value) => { 
       if(value != null && value != undefined ) {   
-        const startOfMonth = new Date(value.year(), value.month(), value.date());
-        this.dateMonth = startOfMonth;//this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
+        this.selectedDate = value.format("YYYY-MM-DD")
       }
     })
-    this.setData(this.date.value) 
+  }
+
+  onDateChange(event: MatDatepickerInputEvent<Date>) {
+    this.loadData()
+  }
+
+  onLocationChange(locationId: String) {
+    console.log(locationId)
+    this.loadData()
+  }
+
+  onButtonClick(event: MatDatepickerInputEvent<Date>) {
+    this.loadData()
   }
 
   loadData() {
     this.loadingTab = 2;
+
+    if(this.dateControl.value != null)
+      this.selectedDate = this.dateControl.value.format("YYYY-MM-DD")
+
     const observerable = forkJoin({
-      purchaseData: this.service.getPurchases(this.dateMonth, this.locationId),
-      salesData: this.service.getSales(this.dateMonth, this.locationId),
-      // targetData: this.service.getTarget(this.dateMonth, this.locationId),
-      payrollData: this.service.getPayroll(this.dateMonth, this.locationId)
+      purchaseData: this.service.getPurchase(this.selectedDate, this.locationId),
+      salesData: this.service.getSales(this.selectedDate, this.locationId),
+      payrollData: this.service.getPayroll(this.selectedDate, this.locationId)
     })
 
     observerable.subscribe((data) => { 
+      console.log(data)
       this.loadingTab = 1;
     })
   }
-
-  setData(value: any) {
-    if(value != null && value != undefined ) {   
-      const startOfMonth = new Date(value.year(), value.month(), value.date());
-      this.dateMonth = startOfMonth;// this._datePipe.transform(startOfMonth, 'yyyy-MM-dd')??'';
-    }
-  }
-
-  // setMonthAndYear(normalizedMonthAndYear: Moment, datepicker: MatDatepicker<Moment>) {
-  //   const ctrlValue = this.date.value ?? moment();
-  //   ctrlValue.month(normalizedMonthAndYear.month());
-  //   ctrlValue.year(normalizedMonthAndYear.year());
-  //   this.date.setValue(ctrlValue);
-  //   datepicker.close();
-  // }
 }

@@ -2,11 +2,11 @@ import { Injectable, WritableSignal, signal } from "@angular/core";
 import { DBStore } from "../db-store/database.service";
 import { ReportModel } from "../models/report.model";
 import { ColumnHeaderModel, DashboardModel } from "../models/dashboard.model";
-import { PurchaseModel } from "../models/purchase.model";
-import { SalesModel } from "../models/sales.model";
+import { Purchase } from "../models/purchase.model";
+import { Sales } from "../models/sales.model";
 import { TargetModel } from "../models/target.model";
-import { PayrollModel } from "../models/payroll.model";
-import { LocationModel } from "../models/location.model";
+import { Payroll } from "../models/payroll.model";
+import { Location } from "../models/location.model";
 import { forkJoin, of, switchMap } from "rxjs";
 
 @Injectable({
@@ -68,11 +68,11 @@ export class DashboardService {
         };
 
         let locationList: string[] = [];
-        let purchaseDetails: PurchaseModel[] = []
-        let salesDetails: SalesModel[] = []
+        let purchaseDetails: Purchase[] = []
+        let salesDetails: Sales[] = []
         let targetDetails: TargetModel[] = []
-        let payrollDetails: PayrollModel[] = []
-        let locationDetails: LocationModel[] = []
+        let payrollDetails: Payroll[] = []
+        let locationDetails: Location[] = []
 
         const observable = forkJoin({
             pData: this.db.getPurchase(startDate, endDate),
@@ -83,7 +83,7 @@ export class DashboardService {
 
         return observable.pipe(
             switchMap(({ pData, sData, payrollData }) => {
-                purchaseDetails = pData;
+                //purchaseDetails = pData;
                 salesDetails = sData;
                 //targetDetails = tData;
                 payrollDetails = payrollData;
@@ -101,21 +101,21 @@ export class DashboardService {
                 });
                 let idx = 1;
                 if (locationList.length > 0) {
-                    this.db.getLocations(locationList.filter((item, index) => locationList.indexOf(item) === index)).then((lData) => {
+                    this.db.getLocations1(locationList.filter((item, index) => locationList.indexOf(item) === index)).then((lData) => {
                         locationDetails = lData;
                         locationDetails.forEach(location => {
                             idx++;
 
-                            let sales: any = this.sumSalesProperties(salesDetails.filter(sale => sale.locationId === location.documentId)!);
-                            let purchase: any = this.sumPurchaseProperties(purchaseDetails.filter(purchase => purchase.locationId === location.documentId)!);
+                            let sales: any = this.sumSalesProperties(salesDetails.filter(sale => sale.locationId === location.id)!);
+                            let purchase: any = this.sumPurchaseProperties(purchaseDetails.filter(purchase => purchase.locationId === location.id)!);
                             let target: TargetModel = {
                                 dcp: location.dcp,
                                 donut: location.donut,
                                 pepsi: location.pepsi,
-                                foodPlusLabour: location.foodPlusLabour,
+                                foodPlusLabour: location.foodPlusLabor,
                                 workmanComp: location.workmanComp
                             };
-                            let payroll: any = this.sumPayrollProperties(payrollDetails.filter(payroll => payroll.locationId === location.documentId)!);
+                            let payroll: any = this.sumPayrollProperties(payrollDetails.filter(payroll => payroll.locationId === location.id)!);
                             if (sales !== undefined && purchase !== undefined && target !== undefined && payroll !== undefined) {
                                 let percentage: any = {
                                     dcp: ((sales.netSales / purchase.dcp) * 100).toFixed(2),
@@ -228,7 +228,7 @@ export class DashboardService {
         return locationIds;
     }
 
-    private sumPayrollProperties(items: PayrollModel[]): {
+    private sumPayrollProperties(items: Payroll[]): {
         expenses: number;
         managerHours: number;
         trainingHours: number;
@@ -250,7 +250,6 @@ export class DashboardService {
                 totalLaborHours: accumulator.totalLaborHours + (currentItem.totalLaborHours ?? 0), 
                 targetAmount: accumulator.targetAmount + (currentItem.targetAmount?? 0), 
                 otherExpenses: accumulator.otherExpenses + (currentItem.otherExpenses?? 0), 
-                cleaning: accumulator.cleaning + (currentItem.cleaning?? 0), 
                 maintenance: accumulator.maintenance + (currentItem.maintenance?? 0), 
                 taxes: accumulator.taxes + (currentItem.taxes?? 0), 
                 percentOfTaxes: accumulator.percentOfTaxes + (currentItem.percentOfTaxes?? 0), 
@@ -264,7 +263,6 @@ export class DashboardService {
             totalLaborHours: 0, 
             targetAmount: 0, 
             otherExpenses: 0,
-            cleaning: 0,
             maintenance: 0,
             taxes: 0,
             percentOfTaxes: 0,
@@ -273,7 +271,7 @@ export class DashboardService {
         });
     }
 
-    private sumPurchaseProperties(items: PurchaseModel[]): {
+    private sumPurchaseProperties(items: Purchase[]): {
         dcp: number;
         donut: number;
         pepsi: number;
@@ -291,7 +289,7 @@ export class DashboardService {
         });
     }
 
-    private sumSalesProperties(items: SalesModel[]): { netSales: number } {
+    private sumSalesProperties(items: Sales[]): { netSales: number } {
         return items.reduce((accumulator, currentItem) => {
             return {
                 netSales: accumulator.netSales + currentItem.netSales

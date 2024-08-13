@@ -1,17 +1,17 @@
-import { LocationModel } from "./location.model"
-import { PurchaseModel } from "./purchase.model"
-import { SalesModel } from "./sales.model"
+import { Location } from "./location.model"
+import { Purchase } from "./purchase.model"
+import { Sales } from "./sales.model"
 import { TargetModel } from "./target.model"
-import { PayrollModel } from "./payroll.model"
+import { Payroll } from "./payroll.model"
 
 export interface ReportModel {
     rowNames: { key: string, rowValue: string }[],
     locations: {
-        location: LocationModel,
-        sales: SalesModel,
-        purchase: PurchaseModel,
+        location: Location,
+        sales: Sales,
+        purchase: Purchase,
         target: TargetModel,
-        payroll: PayrollModel,
+        payroll: Payroll,
         diff: {
             dcp: number,
             donut: number,

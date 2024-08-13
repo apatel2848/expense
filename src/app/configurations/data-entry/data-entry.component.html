@@ -11,29 +11,28 @@
                 <div class="flex gap-4">
                     <mat-form-field>
                         <mat-label>Date</mat-label>
-                        <input matInput [matDatepicker]="dp" [formControl]="date">
+                        <input matInput [matDatepicker]="dp" [formControl]="dateControl" (dateChange)="onDateChange($event)">
                         <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
-                        <mat-datepicker #dp 
-                            panelClass="example-month-picker">
+                        <mat-datepicker #dp panelClass="example-month-picker">
                         </mat-datepicker>
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Location</mat-label>
-                        <mat-select [(value)]="locationId">
+                        <mat-select [(value)]="locationId" (selectionChange)="onLocationChange(locationId)">
                             @for (location of locationData(); track location) {
-                            <mat-option [value]="location.documentId">{{location.name}}</mat-option>
+                                <mat-option [value]="location.id" selected>{{location.name}}</mat-option>
                             }
                         </mat-select>
                     </mat-form-field>
-                    <div style="padding: 4px 0px;">
+                    <!-- <div style="padding: 4px 0px;">
                         <button type="button" (click)="loadData()" style="padding: 10px;line-height: 1px;"
                             class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                             <mat-icon>search</mat-icon>
                         </button>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="configTabs">
-                    @if(locationId != '' && dateMonth != '' && loadingTab == 1) {                
+                    @if(locationId != '' && selectedDate != '' && loadingTab == 1) {                
                         <mat-tab-group animationDuration="0ms">
                             <mat-tab label="Purchase"><app-purchase></app-purchase></mat-tab>
                             <mat-tab label="Sales"><app-sales></app-sales></mat-tab>
@@ -42,7 +41,7 @@
                         </mat-tab-group>
                     }
     
-                    @if(loadingTab == 2 && locationId != '' && dateMonth != '') { 
+                    @if(loadingTab == 2 && locationId != '' && selectedDate != '') { 
                         <mat-tab-group animationDuration="0ms">
                             <mat-tab label="Purchase">
                                 <div class="grid grid-cols-3" style="margin-top: 30px;">
