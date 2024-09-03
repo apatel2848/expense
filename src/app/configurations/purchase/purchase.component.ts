@@ -16,7 +16,7 @@ import moment, { Moment } from "moment";
 import { MatDatepicker, MatDatepickerModule } from "@angular/material/datepicker";
 import { provideNativeDateAdapter } from "@angular/material/core";
 import { provideMomentDateAdapter } from "@angular/material-moment-adapter";
-import { MY_FORMATS } from "../../core/constants/date-format";
+import { APP_FORMATS } from "../../core/constants/format";
 import { MatInputModule } from "@angular/material/input";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
@@ -29,7 +29,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   }`],
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatDatepickerModule, ReactiveFormsModule, MatInputModule],
-  providers: [provideNativeDateAdapter(), DatePipe, provideMomentDateAdapter(MY_FORMATS)]
+  providers: [provideNativeDateAdapter(), DatePipe, provideMomentDateAdapter(APP_FORMATS)]
 })
 export class EditPurchaseDialogComponent implements OnInit {
   service = inject(ConfigurationsService); 

@@ -16,7 +16,7 @@ import { MatDatepicker, MatDatepickerInputEvent, MatDatepickerModule } from "@an
 import { MatInputModule } from "@angular/material/input";
 import { provideNativeDateAdapter } from "@angular/material/core";
 import { provideMomentDateAdapter } from "@angular/material-moment-adapter";
-import { MY_FORMATS } from "../../core/constants/date-format";
+import { APP_FORMATS } from "../../core/constants/format";
 import { ConfigurationsService } from "../../core/services/configurations.service";
 import { Location } from "../../core/models/location.model";
 import moment, { Moment } from "moment";
@@ -48,7 +48,7 @@ import {Payroll} from "../../core/models/payroll.model";
     MatInputModule,
     MatIconModule
   ],
-  providers: [provideNativeDateAdapter(), DatePipe, provideMomentDateAdapter(MY_FORMATS)]
+  providers: [provideNativeDateAdapter(), DatePipe, provideMomentDateAdapter(APP_FORMATS)]
 })
 
 export class DataEntryComponent implements OnInit { 
@@ -90,7 +90,7 @@ export class DataEntryComponent implements OnInit {
     this.loadingTab = 2;
 
     if(this.dateControl.value != null)
-      this.selectedDate = this.dateControl.value.format("YYYY-MM-DD")
+      this.selectedDate = this.dateControl.value.format(APP_FORMATS.parse.dateInput)
 
     const observerable = forkJoin({
       purchaseData: this.service.getPurchase(this.selectedDate, this.locationId),

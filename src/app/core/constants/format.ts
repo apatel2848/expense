@@ -1,6 +1,6 @@
-export const MY_FORMATS = {
-    parse: {
-      dateInput: 'MM/DD/YYYY',
+export const APP_FORMATS = {
+  parse: {
+      dateInput: 'YYYY-MM-DD',
     },
     display: {
       dateInput: 'MM/DD/YYYY',

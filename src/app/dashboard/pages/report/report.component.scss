@@ -4,3 +4,8 @@
   height: 35px !important;
 }
  
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-color: currentColor;
+  font-weight: bold;
+  color: rgb(59, 130, 246);
+}

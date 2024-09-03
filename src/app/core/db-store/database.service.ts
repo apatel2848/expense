@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import {   addDoc, collection, doc, getDocs, getFirestore, orderBy, query,  updateDoc, where, Timestamp, deleteDoc, setDoc  } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, getFirestore, orderBy, query,  updateDoc, where, Timestamp, deleteDoc, setDoc, FieldPath, Firestore, documentId  } from "firebase/firestore";
 import { FireTable } from "../constants/tables"
 import { environment } from "../../../environments/environment";
 import { initializeApp } from "firebase/app";
@@ -450,6 +450,51 @@ export class DBStore {
         }
     }
 
+    async getPayrollByDateRange(locationId: string, startDate: string, endDate: string) { 
+        console.log(`getting payroll from db - locationId:${locationId}, startDate: ${startDate}, endDate: ${endDate}`)
+        const dbPayrolls = query(collection(this.db, FireTable.PAYROLL_COLLECTION), where("locationId", '==' , locationId), where("date", '>=', startDate), where("date", "<=", endDate));
+        const querySnapshot = await getDocs(dbPayrolls);
+
+        let payrollCollection = new Array<Payroll>()
+
+        if(querySnapshot.docs.length > 0)
+        {
+            // purchase.id = querySnapshot.docs[0].id
+            // purchase.donut = querySnapshot.docs[0].data()['donut']
+            // purchase.dcp = querySnapshot.docs[0].data()['dcp']
+            // purchase.pepsi = querySnapshot.docs[0].data()['pepsi']
+            querySnapshot.docs.forEach(doc => {
+                let payroll  = new Payroll()
+                payroll = doc.data() as Payroll
+                payroll.id = doc.id
+                payrollCollection.push(payroll)
+            });
+        }
+        // else 
+        // {
+        //     purchase.locationId = locationId
+        //     purchase.date = date
+        // }
+        console.log(`payroll - locationId:${locationId}, startDate: ${startDate}, endDate: ${endDate}, ${payrollCollection}`)
+        return payrollCollection
+
+        // let totalPayroll = {
+        //     expenses: payrollCollection.reduce((a,b) => a + b.expenses, 0),
+        //     maintenance: payrollCollection.reduce((a,b) => a + b.maintenance, 0),
+        //     managerHours: payrollCollection.reduce((a,b) => a + b.managerHours, 0),
+        //     otherExpenses: payrollCollection.reduce((a,b) => a + b.otherExpenses, 0),
+        //     percentOfTaxes: payrollCollection.reduce((a,b) => a + b.percentOfTaxes, 0),
+        //     targetAmount: payrollCollection.reduce((a,b) => a + b.targetAmount, 0),
+        //     taxes: payrollCollection.reduce((a,b) => a + b.taxes, 0),
+        //     totalExpenses: payrollCollection.reduce((a,b) => a + b.totalExpenses, 0),
+        //     totalLaborHours: payrollCollection.reduce((a,b) => a + b.totalLaborHours, 0),
+        //     trainingHours: payrollCollection.reduce((a,b) => a + b.trainingHours, 0),
+        //     workmanComp: payrollCollection.reduce((a,b) => a + b.workmanComp, 0)
+        // }
+
+        // return totalPayroll
+    }
+
     //#endregion
 
     //#region Sales
@@ -487,6 +532,40 @@ export class DBStore {
         }
     }
 
+    async getSalesByDateRange(locationId: string, startDate: string, endDate: string) { 
+        console.log(`getting sales from db - locationId:${locationId}, startDate: ${startDate}, endDate: ${endDate}`)
+        const dbSales = query(collection(this.db, FireTable.SALES_COLLECTION), where("locationId", '==' , locationId), where("date", '>=', startDate), where("date", "<=", endDate));
+        const querySnapshot = await getDocs(dbSales);
+
+        let salesCollection = new Array<Sales>()
+
+        if(querySnapshot.docs.length > 0)
+        {
+            // purchase.id = querySnapshot.docs[0].id
+            // purchase.donut = querySnapshot.docs[0].data()['donut']
+            // purchase.dcp = querySnapshot.docs[0].data()['dcp']
+            // purchase.pepsi = querySnapshot.docs[0].data()['pepsi']
+            querySnapshot.docs.forEach(doc => {
+                let sales  = new Sales()
+                sales = doc.data() as Sales
+                sales.id = doc.id
+                salesCollection.push(sales)
+            });
+        }
+        // else 
+        // {
+        //     purchase.locationId = locationId
+        //     purchase.date = date
+        // }
+        console.log(`sales - locationId:${locationId}, startDate: ${startDate}, endDate: ${endDate}, ${salesCollection}`)
+
+        // let totalSales = {
+        //     netSales: salesCollection.reduce((a,b) => a + b.netSales, 0)
+        // }
+        return salesCollection
+        //return totalSales
+    }
+
     //#endregion
 
     //#region Purchase
@@ -501,6 +580,7 @@ export class DBStore {
     }
 
     async getPurchase(date: string, locationId: string) { 
+        console.log(date)
         const dbPurchase = query(collection(this.db, FireTable.PURCHASE_COLLECTION), where("locationId", '==' , locationId), where("date", '==', date));
         const querySnapshot = await getDocs(dbPurchase);
 
@@ -523,6 +603,42 @@ export class DBStore {
 
         return purchase
     }
+
+    async getPurchaseByDateRange(locationId: string, startDate: string, endDate: string) { 
+        console.log(`getting purchase from db - locationId:${locationId}, startDate: ${startDate}, endDate: ${endDate}`)
+        const dbPurchases = query(collection(this.db, FireTable.PURCHASE_COLLECTION), where("locationId", '==' , locationId), where("date", '>=', startDate), where("date", "<=", endDate));
+        const querySnapshot = await getDocs(dbPurchases);
+        let purchases = new Array<Purchase>()
+
+        if(querySnapshot.docs.length > 0)
+        {
+            // purchase.id = querySnapshot.docs[0].id
+            // purchase.donut = querySnapshot.docs[0].data()['donut']
+            // purchase.dcp = querySnapshot.docs[0].data()['dcp']
+            // purchase.pepsi = querySnapshot.docs[0].data()['pepsi']
+            querySnapshot.docs.forEach(doc => {
+                let purchase  = new Purchase()
+                purchase = doc.data() as Purchase
+                purchase.id = doc.id
+                purchases.push(purchase)
+            });
+        }
+        // else 
+        // {
+        //     purchase.locationId = locationId
+        //     purchase.date = date
+        // }
+        console.log(`purchases - locationId:${locationId}, startDate: ${startDate}, endDate: ${endDate}, ${purchases}`)
+
+        // let totalPurchase = {
+        //     dcp: purchases.reduce((a,b) => a + b.dcp, 0),
+        //     donut: purchases.reduce((a,b) => a + b.donut, 0),
+        //     pepsi: purchases.reduce((a,b) => a + b.pepsi, 0)
+        // }
+        
+        return purchases
+        //return totalPurchase
+    }
     //#endregion
 
     //#region Location
@@ -537,7 +653,7 @@ export class DBStore {
         {
             for (const documentSnapshot of querySnapshot.docs) {
                 const location = documentSnapshot.data() as Location
-                location.id = documentSnapshot.id
+                location.id = documentSnapshot.id 
                 locations.push(location)
             }
         }
@@ -545,7 +661,11 @@ export class DBStore {
     }
 
     async getLocation(id: string) {
-        const dbLocation = query(collection(this.db, FireTable.LOCATION_COLLECTION), where("Document Name", '==' , id));
+        console.log('getting location, id: ' + id)
+        //const dbLocation = query(collection(this.db, FireTable.LOCATION_COLLECTION), where('name', '==', 'Philadelphia'))
+        const dbLocation = query(collection(this.db, FireTable.LOCATION_COLLECTION), where(documentId(), '==', id))
+
+        console.log(dbLocation)
         const querySnapshot = await getDocs(dbLocation);
 
         if(querySnapshot.docs.length > 0)
