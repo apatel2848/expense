@@ -173,7 +173,7 @@ export class DashboardService {
                         row[key] = '$' + netSales.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
                     }
                     else
-                        row[key] = 0
+                        row[key] = '$' + Number(0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
 
 
                     if(week in purchaseGroups)
@@ -185,7 +185,7 @@ export class DashboardService {
 
                         // Percent of DCP Purchase
                         var row = reportRows['dcpPurchasePercent']
-                        var dcpPercent = ((dcpPurchase/netSales)*100)
+                        var dcpPercent = netSales > 0 ? ((dcpPurchase/netSales)*100) : 0
                         row[key] = dcpPercent.toFixed(2) + '%'
 
                         // Target DCP
@@ -207,7 +207,7 @@ export class DashboardService {
                         
                        // Percent of Donut Purchase
                        var row = reportRows['donutPurchasePercent']
-                       var donutPercent = ((donutPurchase/netSales)*100)
+                       var donutPercent = netSales > 0 ? ((donutPurchase/netSales)*100) : 0
                        row[key] = donutPercent.toFixed(2) + '%'
 
                        // Target Donut
@@ -229,7 +229,7 @@ export class DashboardService {
 
                         // Percent of Pepsi Purchase
                         var row = reportRows['pepsiPurchasePercent']
-                        var pepsiPercent = ((pepsiPurchase/netSales)*100)
+                        var pepsiPercent = netSales > 0 ? ((pepsiPurchase/netSales)*100) : 0
                         row[key] = pepsiPercent.toFixed(2) + '%'
 
                         // Target Pepsi
@@ -250,7 +250,7 @@ export class DashboardService {
 
                         //Food Cost Percent
                         var row = reportRows['totalFoodCostPercent']
-                        foodCostPercent = (totalFoodCost / netSales)*100
+                        foodCostPercent = netSales > 0 ? (totalFoodCost / netSales)*100 : 0
                         row[key] = foodCostPercent.toFixed(2) + '%'
                     }
 
@@ -278,11 +278,11 @@ export class DashboardService {
 
                         // Labor Percent
                         var row = reportRows['payrollPercent']
-                        laborPercent = (payrollExpense / netSales)*100
+                        laborPercent = netSales > 0 ? (payrollExpense / netSales)*100 : 0
                         row[key] = laborPercent.toFixed(2) + '%'
                     }
 
-                    // Total Food + Labor
+                    // Total Food + Labor Percent
                     var row = reportRows['foodPlusLaborPercent']
                     var foodPlusLaborPercent = foodCostPercent + laborPercent
                     row[key] = foodPlusLaborPercent.toFixed(2) + '%'
