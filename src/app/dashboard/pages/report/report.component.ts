@@ -22,6 +22,7 @@ import { ConfigurationsService } from '../../../configurations';
 import { Location } from "../../../core/models/location.model";
 import { timeStamp } from 'console';
 import { Observable, of } from 'rxjs';
+import { sign } from 'crypto';
 
 const moment = _rollupMoment || _moment;
 
@@ -35,7 +36,7 @@ export const MY_FORMATS = {
     dateA11yLabel: 'LL',
     monthYearA11yLabel: 'MMMM YYYY',
   },
-};
+}; 
 
 @Component({
   selector: 'app-report',
@@ -67,41 +68,38 @@ export class ReportComponent implements OnInit {
 
   configurationService = inject(ConfigurationsService);
   dashboardService = inject(DashboardService);
-  public locationData: Signal<Location[]> = computed(() => this.configurationService.allLocations());
-  //public displayedColumns: Signal<string[]> = computed(() => []);
-  public displayedColumns: WritableSignal<string[]> = signal([])
-  public valueColumns: WritableSignal<any[]> = signal([])
 
-  //public dataSource: WritableSignal<any[]> = signal([])
+  public locationData: Signal<Location[]> = computed(() => this.configurationService.allLocations());
+  public columnValues: WritableSignal<string[]> = signal([])
+  public columnHeaders: WritableSignal<any[]> = signal([])
   public dataSource: WritableSignal<Array<{}>> = signal([{}])
   
   readonly dateControl = new FormControl(moment());
   loader: boolean = false;
-  locationId: string = '';
+  selectedLocationId: string = '';
   selectedMonth: number = 0
   selectedYear: number = 0
-  // dataSource: Array<any> = []
 
   constructor(private _datePipe: DatePipe) { 
     this.configurationService.getLocations()
+
+    // this.selectedLocationId = this.locationData()[0].id!
+    
   }
 
   ngOnInit(): void {
+
     this.selectedMonth = this.dateControl.value?.month() ?? 0
     this.selectedYear = this.dateControl.value?.year() ?? 0
 
-    console.log(this.displayedColumns)
-
-    // this.displayedColumns = ['week', 'donut', 'dcp', 'pepsi']
-
-     //getting reort
-     this.getReport(this.locationId, this.selectedMonth, this.selectedYear)
+    //getting reort
+    if(this.selectedLocationId.length > 0)
+      this.getReport(this.selectedLocationId, this.selectedMonth, this.selectedYear)
   }
 
   onMonthChange(normalizedMonthAndYear: Moment, datepicker: MatDatepicker<Moment>) {
     this.selectedMonth = normalizedMonthAndYear.month()
     this.selectedYear = normalizedMonthAndYear.year()
-    var selectedLocation = this.locationId;
 
     //set display value
     const ctrlValue = this.dateControl.value ?? moment();
@@ -111,7 +109,7 @@ export class ReportComponent implements OnInit {
     datepicker.close();
 
     //getting reort
-    this.getReport(this.locationId, this.selectedMonth, this.selectedYear)
+    this.getReport(this.selectedLocationId, this.selectedMonth, this.selectedYear)
   }
 
   onLocationChange(locationId: String) {
@@ -119,14 +117,14 @@ export class ReportComponent implements OnInit {
 
     this.selectedMonth = Number(this.dateControl.value?.month());
     this.selectedYear = Number(this.dateControl.value?.year());
-    var selectedLocation = this.locationId;
 
     //getting reort
-    this.getReport(this.locationId, this.selectedMonth, this.selectedYear)
+    this.getReport(this.selectedLocationId, this.selectedMonth, this.selectedYear)
   }
 
   // get report
   getReport(locationId: string, selectedMonth: number, selectedYear: number) { 
+    console.log(locationId)
     console.log(selectedMonth)
     console.log(selectedYear)
     
@@ -165,20 +163,20 @@ export class ReportComponent implements OnInit {
       this.dashboardService.getWeeklyReportData(locationId, selectedMonth, selectedYear).subscribe(x => {
         
         //first row has header values
-        this.valueColumns.set(x[0])
+        this.columnHeaders.set(x[0])
 
         //remove first row and set values
         x.shift()
         this.dataSource.set(x)
 
         //set header keys for values
-        this.displayedColumns.set(Object.keys(x[0]))
+        this.columnValues.set(Object.keys(x[0]))
       })
     }
   }
 
   public getColumnDisplayName(key: any)
     {
-      return this.valueColumns()[key]
+      return this.columnHeaders()[key]
     }
 }

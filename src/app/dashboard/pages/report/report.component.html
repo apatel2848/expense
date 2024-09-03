@@ -7,7 +7,7 @@
         <mat-card-actions>
           <mat-form-field>
             <mat-label>Location</mat-label>
-            <mat-select [(value)]="locationId" (selectionChange)="onLocationChange(locationId)"> 
+            <mat-select [(value)]="selectedLocationId" (selectionChange)="onLocationChange(selectedLocationId)"> 
                 @for (location of locationData(); track location) {
                     <mat-option [value]="location.id">{{location.name}}</mat-option>
                 }
@@ -40,14 +40,14 @@
           } -->
 
           <table mat-table [dataSource]="dataSource()" class="text-foreground" style="width: 100%;">
-            <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns()">
+            <ng-container [matColumnDef]="column" *ngFor="let column of columnValues()">
               <!-- <th mat-header-cell *matHeaderCellDef> {column} </th> -->
               <th mat-header-cell *matHeaderCellDef> {{getColumnDisplayName(column)}} </th>
               <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr> 
-            <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
+            <tr mat-header-row *matHeaderRowDef="columnValues(); sticky: true"></tr> 
+            <tr mat-row *matRowDef="let row; columns: columnValues()"></tr>
           </table>
       } @else { 
         <app-report-table-loader></app-report-table-loader>

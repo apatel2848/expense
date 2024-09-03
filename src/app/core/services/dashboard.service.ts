@@ -162,26 +162,28 @@ export class DashboardService {
                     let netSales = 0
                     let foodCostPercent = 0
                     let laborPercent = 0
+                    let USDollar = new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                    });
 
                     const key = `week${week}`
 
                     //net sales
                     var row = reportRows['netSales']
                     if(week in salesGroups)
-                    {
                         netSales = salesGroups[week].reduce((a: any,b: any) => a + b.netSales, 0)
-                        row[key] = '$' + netSales.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
-                    }
                     else
-                        row[key] = '$' + Number(0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
-
+                        row[key] = 0
+                    
+                    row[key] = USDollar.format(netSales)
 
                     if(week in purchaseGroups)
                     {
                         // DCP Purchase
                         var row = reportRows['dcpPurchase']
                         var dcpPurchase = purchaseGroups[week].reduce((a: any,b: any) => a + b.dcp, 0)
-                        row[key] = '$' + dcpPurchase.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                        row[key] = USDollar.format(dcpPurchase)
 
                         // Percent of DCP Purchase
                         var row = reportRows['dcpPurchasePercent']
@@ -203,7 +205,7 @@ export class DashboardService {
                         // Donut Purchase
                         var row = reportRows['donutPurchase']
                         var donutPurchase = purchaseGroups[week].reduce((a: any,b: any) => a + b.donut, 0)
-                        row[key] = '$' + donutPurchase.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                        row[key] = USDollar.format(donutPurchase)
                         
                        // Percent of Donut Purchase
                        var row = reportRows['donutPurchasePercent']
@@ -225,7 +227,7 @@ export class DashboardService {
                         // Pepsi Purchase
                         var row = reportRows['pepsiPurchase']
                         var pepsiPurchase = purchaseGroups[week].reduce((a: any,b: any) => a + b.pepsi, 0)
-                        row[key] = '$' + pepsiPurchase.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                        row[key] = USDollar.format(pepsiPurchase)
 
                         // Percent of Pepsi Purchase
                         var row = reportRows['pepsiPurchasePercent']
@@ -246,7 +248,7 @@ export class DashboardService {
                         //Total Food Cost
                         var row = reportRows['totalFoodCost']
                         var totalFoodCost = (dcpPurchase + pepsiPurchase + donutPurchase)
-                        row[key] = '$' + totalFoodCost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                        row[key] = USDollar.format(totalFoodCost)
 
                         //Food Cost Percent
                         var row = reportRows['totalFoodCostPercent']
@@ -259,22 +261,22 @@ export class DashboardService {
                         // Payroll Expense
                         var row = reportRows['payrollExpense']
                         var payrollExpense = payrollGroups[week].reduce((a: any,b: any) => a + b.expenses, 0)
-                        row[key] = '$' + payrollExpense.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                        row[key] = USDollar.format(payrollExpense)
 
                         // Manager Hours
                         var row = reportRows['managerHours']
                         var managerHours = payrollGroups[week].reduce((a: any,b: any) => a + b.managerHours, 0)
-                        row[key] = managerHours.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                        row[key] = USDollar.format(managerHours)
 
                         // Training Hours
                         var row = reportRows['trainingHours']
                         var trainingHours = payrollGroups[week].reduce((a: any,b: any) => a + b.trainingHours, 0)
-                        row[key] = trainingHours.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                        row[key] = USDollar.format(trainingHours)
 
                         // Labor Hours
                         var row = reportRows['laborHours']
                         var laborHours = payrollGroups[week].reduce((a: any,b: any) => a + b.totalLaborHours, 0)
-                        row[key] = laborHours.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                        row[key] = USDollar.format(laborHours)
 
                         // Labor Percent
                         var row = reportRows['payrollPercent']
@@ -294,19 +296,19 @@ export class DashboardService {
                     
                     // Target Food + Labor Difference
                     var row = reportRows['foodPlusLaborTargetDiff']
-                    var foodPlusLaborTargetDiff = foodPlusLaborTarget - foodPlusLaborPercent
+                    var foodPlusLaborTargetDiff = foodPlusLaborPercent - foodPlusLaborTarget
                     row[key] = foodPlusLaborTargetDiff.toFixed(2) + '%'
+                    
 
                     //Dollar Lost This Week
                     var row = reportRows['dollarLostThisWeek']
                     var dollarLost = foodPlusLaborTargetDiff/100 * netSales
-                    row[key] = '$' + dollarLost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                    row[key] = USDollar.format(dollarLost)
 
                     //Yearly Lost
                     var row = reportRows['yearlyLoss']
                     var yearlyLoss = dollarLost*52
-                    row[key] = '$' + yearlyLoss.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
-
+                    row[key] = USDollar.format(yearlyLoss)
                 })
 
                 console.log('end')

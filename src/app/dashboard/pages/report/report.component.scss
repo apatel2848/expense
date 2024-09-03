@@ -8,4 +8,9 @@
   border-color: currentColor;
   font-weight: bold;
   color: rgb(59, 130, 246);
+  background-color: lighten($color: #ebedef, $amount: 0);
+}
+
+.mat-header-cell {
+  font-weight: bold;
 }
