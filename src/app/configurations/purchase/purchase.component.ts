@@ -33,7 +33,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class EditPurchaseDialogComponent implements OnInit {
   service = inject(ConfigurationsService); 
-  @Input('data') data: Purchase = new Purchase(); 
+  @Input('data') purchase: Purchase = new Purchase(); 
 
 
   constructor(private _snackBar: MatSnackBar) { }
@@ -41,10 +41,11 @@ export class EditPurchaseDialogComponent implements OnInit {
   ngOnInit(): void { 
   }
  
-  editLocation() { 
-    if(this.data.id === undefined) 
-       this.service.addPurchase(this.data).then((id: any) => { 
-        this.data.id = id;
+  editPurchase() 
+  { 
+    if(this.purchase.id === undefined) 
+       this.service.addPurchase(this.purchase).then((id: any) => { 
+        this.purchase.id = id;
         this._snackBar.open('Success', 'Close', {
           duration: 2000
         });;
@@ -54,7 +55,10 @@ export class EditPurchaseDialogComponent implements OnInit {
         });;
       });
     else
-      this.service.editPurchase(this.data).then(() => {
+    {
+      let p = Object.assign(new Purchase(), this.purchase)
+
+      this.service.editPurchase(p).then(() => {
         this._snackBar.open('Success', 'Close', {
           duration: 2000
         });;
@@ -63,6 +67,7 @@ export class EditPurchaseDialogComponent implements OnInit {
           duration: 2000
         });;
       });
+    }
   }
 }
 

@@ -110,11 +110,6 @@ export class DBStore {
     //         }) 
     // }
 
-    async updatePurchase(purchase: Purchase) { 
-        //updateDoc(doc(this.db, `${FireTable.PURCHASE_COLLECTION}/${purchase.id}`), { dateMonth: purchase.dateMonth, dcp: purchase.dcp, donut: purchase.donut, pepsi: purchase.pepsi, locationId: purchase.locationId})
-    }
-
-
     async getAllPurchases() {
         const purchases = query(collection(this.db, FireTable.PURCHASE_COLLECTION));
         const querySnapshot = await getDocs(purchases);
@@ -188,10 +183,6 @@ export class DBStore {
     //         return docRef.id
     //     })
     // }
-
-    async updateSales(sale: Sales) { 
-        updateDoc(doc(this.db, `${FireTable.SALES_COLLECTION}/${sale.id}`), { dateMonth: sale.date, netSales: sale.netSales, locationId: sale.locationId})
-    }
 
     async getAllSales() {
         const sales = query(collection(this.db, FireTable.SALES_COLLECTION));
@@ -443,7 +434,6 @@ export class DBStore {
 
     async editPayroll(payroll: Payroll) { 
         try {
-            console.log(payroll)
             updateDoc(doc(this.db, `${FireTable.PAYROLL_COLLECTION}/${payroll.id}`), payroll.toJson())
         } catch (error) {
             console.error(error)
@@ -566,6 +556,10 @@ export class DBStore {
         //return totalSales
     }
 
+    async updateSales(sales: Sales) { 
+        updateDoc(doc(this.db, `${FireTable.SALES_COLLECTION}/${sales.id}`), sales.toJson())
+    }
+
     //#endregion
 
     //#region Purchase
@@ -639,6 +633,14 @@ export class DBStore {
         return purchases
         //return totalPurchase
     }
+
+    async updatePurchase(purchase: Purchase) { 
+        console.log('1')
+        console.log(purchase)
+        console.log('1')
+        updateDoc(doc(this.db, `${FireTable.PURCHASE_COLLECTION}/${purchase.id}`), purchase.toJson())
+    }
+
     //#endregion
 
     //#region Location

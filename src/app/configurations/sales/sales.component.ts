@@ -29,7 +29,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class EditSalesDialogComponent implements OnInit {
   service = inject(ConfigurationsService);
-  @Input('data') data: Sales = new Sales()
+  @Input('data') sales: Sales = new Sales()
 
 
   constructor(private _snackBar: MatSnackBar) { }
@@ -37,9 +37,9 @@ export class EditSalesDialogComponent implements OnInit {
   ngOnInit(): void { 
   } 
 
-  editLocation() { 
-    if(this.data.id === undefined) 
-       this.service.addSales(this.data).then((id: any) => { 
+  editSales() { 
+    if(this.sales.id === undefined) 
+       this.service.addSales(this.sales).then((id: any) => { 
         // this.data.id = id;
         this._snackBar.open('Success', 'Close', {
           duration: 2000
@@ -50,7 +50,10 @@ export class EditSalesDialogComponent implements OnInit {
         });;
       });
     else
-      this.service.editSales(this.data).then(() => {
+    {
+      let s = Object.assign(new Sales(), this.sales)
+
+      this.service.editSales(s).then(() => {
         this._snackBar.open('Success', 'Close', {
           duration: 2000
         });;
@@ -59,6 +62,7 @@ export class EditSalesDialogComponent implements OnInit {
           duration: 2000
         });;
       });
+    }
   }
 }
 

@@ -59,9 +59,7 @@ export class EditPayrollDialogComponent implements OnInit {
     }
     else
     {
-      console.log(this.payroll)
       let p = Object.assign(new Payroll(), this.payroll)
-      console.log(p)
       
       this.service.editPayroll(p).then(() => {
         this._snackBar.open('Success', 'Close', {
