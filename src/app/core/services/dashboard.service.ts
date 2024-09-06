@@ -379,6 +379,7 @@ export class DashboardService {
         //captions
         let captions = {
             netSales: 'Net Sales',
+            emptyRow1: '',
             dcpPurchase: 'DCP Purchase',
             dcpPurchasePercent: 'DCP %',
             dcpTarget: 'DCP Target',
@@ -393,7 +394,7 @@ export class DashboardService {
             pepsiTargetDiff: 'Donut Target Difference',
             totalFoodCost: 'Total Food Cost',
             totalFoodCostPercent: 'Total Food Cost %',
-            emptyRow1: '',
+            emptyRow2: '',
             payrollExpense: 'Payroll Expense',
             // managerHours: 'Manager Hours',
             // trainingHours: 'Training Hours',
@@ -405,10 +406,11 @@ export class DashboardService {
             payrollPercent: 'Payroll %',
             payrollTargetPercent: 'Payroll Target %',
             payrollTargetDiff: 'Payroll Target Difference',
-            emptyRow2: '',
+            emptyRow3: '',
             foodPlusLaborPercent: 'Food + Labor %',
             foodPlusLaborTarget: 'Food + Labor Target',
             foodPlusLaborTargetDiff: 'Food + Labor Target Diff',
+            emptyRow4: '',
             dollarLostThisWeek: '$ Lost This Week',
             yearlyLoss: 'Yearly Loss (if continue)'
         }

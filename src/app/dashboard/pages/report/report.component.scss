@@ -11,6 +11,31 @@
   background-color: lighten($color: #ebedef, $amount: 0);
 }
 
-.mat-header-cell {
+table .mat-mdc-header-cell {
   font-weight: bold;
+  //border: 1px solid gray;
+  text-align: center;
+  background-color: lightgray;
+}
+
+th[class^='mat-column-week'], td[class*='mat-column-week']{
+  text-align: right;
+}
+
+table {
+  width: 100%;
+  border: 1px solid gray;
+  border-radius: 5em;
+}
+
+.mat-mdc-row {
+  border: 1px solid gray;
+}
+
+.mat-mdc-cell {
+  border: 1px solid gray;
+}
+
+td .mat-mdc-cell {
+  width: 70px;
 }

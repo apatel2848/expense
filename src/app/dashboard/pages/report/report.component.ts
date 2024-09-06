@@ -88,7 +88,7 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    
     this.selectedMonth = this.dateControl.value?.month() ?? 0
     this.selectedYear = this.dateControl.value?.year() ?? 0
 
