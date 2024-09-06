@@ -23,25 +23,29 @@
       </div>
       <div class="grid gap-4 mb-4 grid-cols-3">  
         <div class="col-span-1">
-          <label for="dcp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">DCP</label>
+          <label for="dcp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">DCP %</label>
           <input [(ngModel)]="location.dcp" type="number" name="dcp" id="dcp" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="DCP" required="">
         </div> 
         <div class="col-span-1">
-          <label for="donut" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Donut</label>
+          <label for="donut" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Donut %</label>
           <input [(ngModel)]="location.donut" type="number" name="donut" id="donut" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Donut" required="">
         </div> 
         <div class="col-span-1">
-          <label for="pepsi" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pepsi</label>
+          <label for="pepsi" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pepsi %</label>
           <input [(ngModel)]="location.pepsi" type="number" name="pepsi" id="pepsi" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Pepsi" required="">
         </div>  
         <div class="col-span-1">
-          <label for="foodPlusLabor" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Food Plus Labour</label>
-          <input [(ngModel)]="location.foodPlusLabor" type="number" name="foodPlusLabor" id="foodPlusLabor" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Food+Labor" required="">
+          <label for="workmanComp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Payroll %</label>
+          <input [(ngModel)]="location.payroll" type="number" name="payroll" id="payroll" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Workman Comp" required="">
         </div> 
         <div class="col-span-1">
+          <label for="foodPlusLabor" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Food Plus Labour %</label>
+          <input [(ngModel)]="location.foodPlusLabor" type="number" name="foodPlusLabor" id="foodPlusLabor" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Food+Labor" required="">
+        </div> 
+        <!-- <div class="col-span-1">
           <label for="workmanComp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Workman Comp</label>
           <input [(ngModel)]="location.workmanComp" type="number" name="workmanComp" id="workmanComp" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Workman Comp" required="">
-        </div> 
+        </div>  -->
     </div> 
     </form>
   </mat-dialog-content>

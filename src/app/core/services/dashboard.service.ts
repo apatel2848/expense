@@ -241,8 +241,8 @@ export class DashboardService {
 
                         // Target Pepsi Difference
                         var row = reportRows['pepsiTargetDiff']
-                        var pepsiTaretDiff = pepsiTarget - pepsiPercent
-                        row[key] = pepsiTaretDiff.toFixed(2) + '%'
+                        var pepsiTargetDiff = pepsiTarget - pepsiPercent
+                        row[key] = pepsiTargetDiff.toFixed(2) + '%'
 
 
                         //Total Food Cost
@@ -263,25 +263,55 @@ export class DashboardService {
                         var payrollExpense = payrollGroups[week].reduce((a: any,b: any) => a + b.expenses, 0)
                         row[key] = USDollar.format(payrollExpense)
 
-                        // Manager Hours
-                        var row = reportRows['managerHours']
-                        var managerHours = payrollGroups[week].reduce((a: any,b: any) => a + b.managerHours, 0)
-                        row[key] = USDollar.format(managerHours)
+                        // Other Payroll Expense
+                        var row = reportRows['otherPayrollExpense']
+                        var otherPayrollExpense = payrollGroups[week].reduce((a: any,b: any) => a + b.otherExpense, 0)
+                        row[key] = USDollar.format(otherPayrollExpense)
 
-                        // Training Hours
-                        var row = reportRows['trainingHours']
-                        var trainingHours = payrollGroups[week].reduce((a: any,b: any) => a + b.trainingHours, 0)
-                        row[key] = USDollar.format(trainingHours)
+                        // Wages
+                        var row = reportRows['payrollWages']
+                        var payrollWage = payrollGroups[week].reduce((a: any,b: any) => a + b.wages, 0)
+                        row[key] = USDollar.format(payrollWage)
+
+                        // Payroll Tax
+                        var row = reportRows['payrollTax']
+                        var payrollTax = payrollGroups[week].reduce((a: any,b: any) => a + b.taxes, 0)
+                        row[key] = USDollar.format(payrollTax)
+
+                        // Payroll Tax
+                        var row = reportRows['workmanComp']
+                        var workmanComp = payrollGroups[week].reduce((a: any,b: any) => a + b.workmanComp, 0)
+                        row[key] = USDollar.format(workmanComp)
+
+                        // // Manager Hours
+                        // var row = reportRows['managerHours']
+                        // var managerHours = payrollGroups[week].reduce((a: any,b: any) => a + b.managerHours, 0)
+                        // row[key] = USDollar.format(managerHours)
+
+                        // // Training Hours
+                        // var row = reportRows['trainingHours']
+                        // var trainingHours = payrollGroups[week].reduce((a: any,b: any) => a + b.trainingHours, 0)
+                        // row[key] = USDollar.format(trainingHours)
 
                         // Labor Hours
-                        var row = reportRows['laborHours']
-                        var laborHours = payrollGroups[week].reduce((a: any,b: any) => a + b.totalLaborHours, 0)
-                        row[key] = USDollar.format(laborHours)
+                        // var row = reportRows['laborHours']
+                        // var laborHours = payrollGroups[week].reduce((a: any,b: any) => a + b.totalLaborHours, 0)
+                        // row[key] = USDollar.format(laborHours)
 
-                        // Labor Percent
+                        // Payroll Percent
                         var row = reportRows['payrollPercent']
-                        laborPercent = netSales > 0 ? (payrollExpense / netSales)*100 : 0
+                        laborPercent = netSales > 0 ? ((payrollExpense + otherPayrollExpense + payrollWage + payrollTax + workmanComp) / netSales)*100 : 0
                         row[key] = laborPercent.toFixed(2) + '%'
+
+                        // Payroll Target Percent
+                        var row = reportRows['payrollTargetPercent']
+                        var payrollTarget = (locationData?.payroll ?? 0) 
+                        row[key] = payrollTarget.toFixed(2) + '%'
+
+                        // Payroll Target Difference
+                        var row = reportRows['payrollTargetDiff']
+                        var payrollTargetDiff = payrollTarget - laborPercent
+                        row[key] = payrollTargetDiff.toFixed(2) + '%'
                     }
 
                     // Total Food + Labor Percent
@@ -365,10 +395,16 @@ export class DashboardService {
             totalFoodCostPercent: 'Total Food Cost %',
             emptyRow1: '',
             payrollExpense: 'Payroll Expense',
-            managerHours: 'Manager Hours',
-            trainingHours: 'Training Hours',
-            laborHours: 'Labor Hours',
-            LaborPercent: 'Labor %',
+            // managerHours: 'Manager Hours',
+            // trainingHours: 'Training Hours',
+            // laborHours: 'Labor Hours',
+            payrollTax: 'Payroll Tax',
+            workmanComp: 'Workman Comp',
+            payrollWages: 'Wages',
+            otherPayrollExpense: 'Other Payroll Expense',
+            payrollPercent: 'Payroll %',
+            payrollTargetPercent: 'Payroll Target %',
+            payrollTargetDiff: 'Payroll Target Difference',
             emptyRow2: '',
             foodPlusLaborPercent: 'Food + Labor %',
             foodPlusLaborTarget: 'Food + Labor Target',

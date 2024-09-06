@@ -25,7 +25,7 @@ import { MatDividerModule } from "@angular/material/divider";
 export class LocationComponent implements OnInit {
   service = inject(ConfigurationsService);
   public locationData: Signal<Location[]> = computed(() => this.service.allLocations());
-  public displayedColumnObject: any[] = [{ key: 'id', header: 'Id' }, { key: 'name', header: 'Name' }, { key: 'dcp', header: 'DCP' }, { key: 'donut', header: 'Donut' }, { key: 'pepsi', header: 'Pepsi' }, { key: 'workmanComp', header: 'Workman Comp' }, { key: 'foodPlusLabor', header: 'Food Plus Labor' }]
+  public displayedColumnObject: any[] = [{ key: 'id', header: 'Id' }, { key: 'name', header: 'Name' }, { key: 'dcp', header: 'DCP %' }, { key: 'donut', header: 'Donut %' }, { key: 'pepsi', header: 'Pepsi %' }, { key: 'payroll', header: 'Payroll %' }, { key: 'foodPlusLabor', header: 'Food Plus Labor %' }]
   public displayedColumns: string[] = this.displayedColumnObject.map((column) => column.key)
   selectedRowId: string= '';
   selectedRowObj: Location = new Location()

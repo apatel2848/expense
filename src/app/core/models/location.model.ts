@@ -7,8 +7,9 @@ export class Location {
     dcp: number = 0;
     donut: number = 0;
     pepsi: number = 0;
-    workmanComp: number = 0;
+    // workmanComp: number = 0;
     foodPlusLabor: number = 0;
+    payroll: number = 0;
 
     toJson()
     {
@@ -21,8 +22,9 @@ export class Location {
             dcp: this.dcp,
             donut: this.donut,
             pepsi: this.pepsi,
-            workmanComp: this.workmanComp,
-            foodPlusLabor: this.foodPlusLabor
+            // workmanComp: this.workmanComp,
+            foodPlusLabor: this.foodPlusLabor,
+            payroll: this.payroll
         }
         return location
     }
