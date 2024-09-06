@@ -25,15 +25,19 @@
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="exportAsExcel()" [disabled] = "!enableDownload">
               <mat-icon>download</mat-icon>
-              <span>Download</span>
+              <span>Download Excel</span>
+            </button>
+            <button mat-menu-item (click)="exportAsPdf()" [disabled] = "!enableDownload">
+              <mat-icon>download</mat-icon>
+              <span>Download PDF</span>
             </button>
           </mat-menu>
         </mat-card-actions>
       </mat-card-header>
       <mat-card-content>
         @if(loader == false) {
-          <div class="example-container mat-elevation-z8 " #reportTable>
-            <table mat-table [dataSource]="dataSource()" class="text-foreground">
+          <div class="example-container mat-elevation-z8 " #reportTableDiv>
+            <table mat-table [dataSource]="dataSource()" class="text-foreground" id="reportTable">
               <ng-container [matColumnDef]="column" *ngFor="let column of columnValues()">
                 <!-- <th mat-header-cell *matHeaderCellDef> {column} </th> -->
                 <th mat-header-cell *matHeaderCellDef> {{getColumnDisplayName(column)}} </th>

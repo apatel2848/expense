@@ -26,8 +26,10 @@ import { sign } from 'crypto';
 import * as XLSX from 'xlsx';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
-
-const moment = _rollupMoment || _moment;
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable' 
+ 
+const moment = _rollupMoment || _moment; 
 
 export const MY_FORMATS = {
   parse: {
@@ -70,7 +72,7 @@ export const MY_FORMATS = {
  
 export class ReportComponent implements OnInit { 
   //report table component
-  @ViewChild('reportTable') reportTable: ElementRef | undefined;
+  @ViewChild('reportTableDiv') reportTable: ElementRef | undefined;
 
   configurationService = inject(ConfigurationsService);
   dashboardService = inject(DashboardService);
@@ -195,4 +197,14 @@ export class ReportComponent implements OnInit {
     const fileName = this.dateControl.value?.format("YYYY-MM")
     XLSX.writeFile(wb, `${fileName}.xlsx`);
   }
+
+   //export as pdf
+   public exportAsPdf()
+   {
+    const doc = new jsPDF()
+    autoTable(doc, { html: '#reportTable' })
+    const fileName = this.dateControl.value?.format("YYYY-MM")
+    doc.save(fileName)
+
+   }
 }
