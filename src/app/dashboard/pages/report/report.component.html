@@ -12,43 +12,38 @@
                     <mat-option [value]="location.id">{{location.name}}</mat-option>
                 }
             </mat-select>
-        </mat-form-field>
+          </mat-form-field>
           <mat-form-field>
             <mat-label>Month and Year</mat-label>
             <input matInput [matDatepicker]="dp" [formControl]="dateControl">
             <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
             <mat-datepicker #dp startView="year" (monthSelected)="onMonthChange($event, dp)"></mat-datepicker>
           </mat-form-field>
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="exportAsExcel()" [disabled] = "!enableDownload">
+              <mat-icon>download</mat-icon>
+              <span>Download</span>
+            </button>
+          </mat-menu>
         </mat-card-actions>
       </mat-card-header>
       <mat-card-content>
         @if(loader == false) {
-          <!-- @if(reportData().tableData.length > 0) {
-            <table mat-table [dataSource]="reportData().tableData" class="text-foreground" style="width: 100%;">
-              <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns()">
+          <div class="example-container mat-elevation-z8 " #reportTable>
+            <table mat-table [dataSource]="dataSource()" class="text-foreground">
+              <ng-container [matColumnDef]="column" *ngFor="let column of columnValues()">
+                <!-- <th mat-header-cell *matHeaderCellDef> {column} </th> -->
                 <th mat-header-cell *matHeaderCellDef> {{getColumnDisplayName(column)}} </th>
                 <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
               </ng-container>
 
-              <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
+              <tr mat-header-row *matHeaderRowDef="columnValues(); sticky: true"></tr> 
+              <tr mat-row *matRowDef="let row; columns: columnValues()"></tr>
             </table>
-          } @else {
-            <div class="text-center">
-              <p>No data available</p> 
-            </div>
-          } -->
-
-          <table mat-table [dataSource]="dataSource()" class="text-foreground" >
-            <ng-container [matColumnDef]="column" *ngFor="let column of columnValues()">
-              <!-- <th mat-header-cell *matHeaderCellDef> {column} </th> -->
-              <th mat-header-cell *matHeaderCellDef> {{getColumnDisplayName(column)}} </th>
-              <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="columnValues(); sticky: true"></tr> 
-            <tr mat-row *matRowDef="let row; columns: columnValues()"></tr>
-          </table>
+          </div>
       } @else { 
         <app-report-table-loader></app-report-table-loader>
       }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Signal, computed, ChangeDetectionStrategy, inject, WritableSignal, signal } from '@angular/core';
+import { Component, OnInit, Signal, computed, ChangeDetectionStrategy, inject, WritableSignal, signal,ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe, JsonPipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card'
@@ -23,6 +23,9 @@ import { Location } from "../../../core/models/location.model";
 import { timeStamp } from 'console';
 import { Observable, of } from 'rxjs';
 import { sign } from 'crypto';
+import * as XLSX from 'xlsx';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
 
 const moment = _rollupMoment || _moment;
 
@@ -58,40 +61,57 @@ export const MY_FORMATS = {
     MatFormFieldModule, 
     MatSelectModule,
     CommonModule,
-    ReportTableLoaderComponent
+    ReportTableLoaderComponent,
+    MatButtonModule, MatMenuModule, MatIconModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [DashboardService, provideNativeDateAdapter(), DatePipe, provideMomentDateAdapter(MY_FORMATS)]
 })
  
 export class ReportComponent implements OnInit { 
+  //report table component
+  @ViewChild('reportTable') reportTable: ElementRef | undefined;
 
   configurationService = inject(ConfigurationsService);
   dashboardService = inject(DashboardService);
 
-  public locationData: Signal<Location[]> = computed(() => this.configurationService.allLocations());
+  // public locationData: Signal<Location[]> = computed(() => this.configurationService.allLocations());
+
+  public locationData: Signal<Location[]> = computed(() => {
+
+    //get all locations
+    let locations = this.configurationService.allLocations()
+
+    //set first location as default
+    if(locations != undefined && locations.length > 0)
+      this.selectedLocationId = locations[0].id != undefined ? locations[0].id : ''
+
+    //pull report
+    this.getReport(this.selectedLocationId, this.selectedMonth, this.selectedYear)
+    return locations
+  });
+
+
   public columnValues: WritableSignal<string[]> = signal([])
   public columnHeaders: WritableSignal<any[]> = signal([])
   public dataSource: WritableSignal<Array<{}>> = signal([{}])
   
-  readonly dateControl = new FormControl(moment());
+  //readonly dateControl = new FormControl(moment());
+  readonly dateControl = new FormControl(moment().add(-1, 'M'));
   loader: boolean = false;
   selectedLocationId: string = '';
   selectedMonth: number = 0
   selectedYear: number = 0
+  enableDownload: boolean = false
 
   constructor(private _datePipe: DatePipe) { 
     this.configurationService.getLocations()
-
-    // this.selectedLocationId = this.locationData()[0].id!
-    
   }
 
   ngOnInit(): void {
-    
     this.selectedMonth = this.dateControl.value?.month() ?? 0
     this.selectedYear = this.dateControl.value?.year() ?? 0
-
+    console.log(this.selectedLocationId)
     //getting reort
     if(this.selectedLocationId.length > 0)
       this.getReport(this.selectedLocationId, this.selectedMonth, this.selectedYear)
@@ -128,25 +148,6 @@ export class ReportComponent implements OnInit {
     console.log(selectedMonth)
     console.log(selectedYear)
     
-    // this.dashboardService.getWeeklyReportData(locationId, selectedMonth, selectedYear).subscribe(data => {
-    //   let xt: Array<any> = []
-
-    //   data.forEach(x => {
-    //     let row = {
-    //         week: x.week,
-    //         totalDonut: x.purchaseData.donut,
-    //         totalPepsi:  x.purchaseData.pepsi,
-    //         totalDcp: x.purchaseData.dcp
-    //     }
-    //     xt.push(row) 
-    //   })
-    //   console.log(xt)
-    //   this.dataSource = xt
-    // })
-
-    // this.dataSource  = this.dashboardService.getWeeklyReportData(locationId, selectedMonth, selectedYear)
-    // console.log('....???...' + this.dataSource)
-    // this.displayedColumns = computed(() => Object.keys(this.dataSource[0]))
 
     if(locationId != null && locationId.length > 0)
     {
@@ -171,12 +172,27 @@ export class ReportComponent implements OnInit {
 
         //set header keys for values
         this.columnValues.set(Object.keys(x[0]))
+
+        //enable download
+        this.enableDownload = true
       })
     }
   }
 
   public getColumnDisplayName(key: any)
-    {
-      return this.columnHeaders()[key]
-    }
+  {
+    return this.columnHeaders()[key]
+  }
+
+  //export as excel
+  public exportAsExcel()
+  {
+    const ws: XLSX.WorkSheet=XLSX.utils.table_to_sheet(this.reportTable?.nativeElement);//converts a DOM TABLE element to a worksheet
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    /* save to file */
+    const fileName = this.dateControl.value?.format("YYYY-MM")
+    XLSX.writeFile(wb, `${fileName}.xlsx`);
+  }
 }

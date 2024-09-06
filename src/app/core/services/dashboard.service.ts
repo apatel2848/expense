@@ -128,10 +128,6 @@ export class DashboardService {
         console.log(startDate + '   ...   ' + endDate)
 
         const observable = forkJoin({
-            // purchaseData: this.db.getPurchaseByDateRange(locationId, firstDayOfMonth, lastDayOfMonth),
-            // salesData: this.db.getSalesByDateRange(locationId, firstDayOfMonth, lastDayOfMonth),
-            // payrollData: this.db.getPayrollByDateRange(locationId, firstDayOfMonth, lastDayOfMonth),
-            // locationData: this.db.getLocation(locationId)
             purchaseData: this.db.getPurchaseByDateRange(locationId, startDate, endDate),
             salesData: this.db.getSalesByDateRange(locationId, startDate, endDate),
             payrollData: this.db.getPayrollByDateRange(locationId, startDate, endDate),
@@ -332,7 +328,7 @@ export class DashboardService {
 
                     //Dollar Lost This Week
                     var row = reportRows['dollarLostThisWeek']
-                    var dollarLost = foodPlusLaborTargetDiff/100 * netSales
+                    var dollarLost = (foodPlusLaborTargetDiff > 0) ? foodPlusLaborTargetDiff/100 * netSales : 0
                     row[key] = USDollar.format(dollarLost)
 
                     //Yearly Lost
