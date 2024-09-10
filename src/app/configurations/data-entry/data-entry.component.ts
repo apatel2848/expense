@@ -53,15 +53,31 @@ import {Payroll} from "../../core/models/payroll.model";
 
 export class DataEntryComponent implements OnInit { 
   
-  service = inject(ConfigurationsService);
-  public locationData: Signal<Location[]> = computed(() => this.service.allLocations());
+  configurationService = inject(ConfigurationsService);
+  //public locationData: Signal<Location[]> = computed(() => this.service.allLocations());
+
+  public locationData: Signal<Location[]> = computed(() => {
+
+    //get all locations
+    let locations = this.configurationService.allLocations()
+
+    //set first location as default
+    if(locations != undefined && locations.length > 0)
+      this.selectedLocationId = locations[0].id != undefined ? locations[0].id : ''
+
+    //pull data
+    this.loadData()
+    return locations
+  });
+
+
   dateControl = new FormControl(moment());
   selectedDate: string = '';
-  locationId: string = '';
+  selectedLocationId: string = '';
   loadingTab: number = 0;
 
   constructor(private _datePipe: DatePipe) {
-    this.service.getLocations()
+    this.configurationService.getLocations()
   }
 
   
@@ -93,9 +109,9 @@ export class DataEntryComponent implements OnInit {
       this.selectedDate = this.dateControl.value.format(APP_FORMATS.parse.dateInput)
 
     const observerable = forkJoin({
-      purchaseData: this.service.getPurchase(this.selectedDate, this.locationId),
-      salesData: this.service.getSales(this.selectedDate, this.locationId),
-      payrollData: this.service.getPayroll(this.selectedDate, this.locationId)
+      purchaseData: this.configurationService.getPurchase(this.selectedDate, this.selectedLocationId),
+      salesData: this.configurationService.getSales(this.selectedDate, this.selectedLocationId),
+      payrollData: this.configurationService.getPayroll(this.selectedDate, this.selectedLocationId)
     })
 
     observerable.subscribe((data) => { 

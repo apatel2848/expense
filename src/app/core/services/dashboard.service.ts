@@ -254,17 +254,7 @@ export class DashboardService {
 
                     if(week in payrollGroups)
                     {
-                        // Payroll Expense
-                        var row = reportRows['payrollExpense']
-                        var payrollExpense = payrollGroups[week].reduce((a: any,b: any) => a + b.expenses, 0)
-                        row[key] = USDollar.format(payrollExpense)
-
-                        // Other Payroll Expense
-                        var row = reportRows['otherPayrollExpense']
-                        var otherPayrollExpense = payrollGroups[week].reduce((a: any,b: any) => a + b.otherExpense, 0)
-                        row[key] = USDollar.format(otherPayrollExpense)
-
-                        // Wages
+                        // Payroll Wages
                         var row = reportRows['payrollWages']
                         var payrollWage = payrollGroups[week].reduce((a: any,b: any) => a + b.wages, 0)
                         row[key] = USDollar.format(payrollWage)
@@ -274,10 +264,15 @@ export class DashboardService {
                         var payrollTax = payrollGroups[week].reduce((a: any,b: any) => a + b.taxes, 0)
                         row[key] = USDollar.format(payrollTax)
 
-                        // Payroll Tax
+                        // Workman Comp
                         var row = reportRows['workmanComp']
                         var workmanComp = payrollGroups[week].reduce((a: any,b: any) => a + b.workmanComp, 0)
                         row[key] = USDollar.format(workmanComp)
+
+                        // Other Payroll Expense
+                        var row = reportRows['otherPayrollExpense']
+                        var otherPayrollExpense = payrollGroups[week].reduce((a: any,b: any) => a + b.otherExpense, 0)
+                        row[key] = USDollar.format(otherPayrollExpense)
 
                         // // Manager Hours
                         // var row = reportRows['managerHours']
@@ -296,7 +291,7 @@ export class DashboardService {
 
                         // Payroll Percent
                         var row = reportRows['payrollPercent']
-                        laborPercent = netSales > 0 ? ((payrollExpense + otherPayrollExpense + payrollWage + payrollTax + workmanComp) / netSales)*100 : 0
+                        laborPercent = netSales > 0 ? ((otherPayrollExpense + payrollWage + payrollTax + workmanComp) / netSales)*100 : 0
                         row[key] = laborPercent.toFixed(2) + '%'
 
                         // Payroll Target Percent
@@ -391,13 +386,13 @@ export class DashboardService {
             totalFoodCost: 'Total Food Cost',
             totalFoodCostPercent: 'Total Food Cost %',
             emptyRow2: '',
-            payrollExpense: 'Payroll Expense',
+            // payrollExpense: 'Payroll Expense',
             // managerHours: 'Manager Hours',
             // trainingHours: 'Training Hours',
             // laborHours: 'Labor Hours',
+            payrollWages: 'Payroll Wages',
             payrollTax: 'Payroll Tax',
             workmanComp: 'Workman Comp',
-            payrollWages: 'Wages',
             otherPayrollExpense: 'Other Payroll Expense',
             payrollPercent: 'Payroll %',
             payrollTargetPercent: 'Payroll Target %',

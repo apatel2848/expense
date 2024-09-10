@@ -18,7 +18,7 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Location</mat-label>
-                        <mat-select [(value)]="locationId" (selectionChange)="onLocationChange(locationId)">
+                        <mat-select [(value)]="selectedLocationId" (selectionChange)="onLocationChange(selectedLocationId)">
                             @for (location of locationData(); track location) {
                                 <mat-option [value]="location.id" selected>{{location.name}}</mat-option>
                             }
@@ -32,7 +32,7 @@
                     </div> -->
                 </div>
                 <div class="configTabs">
-                    @if(locationId != '' && selectedDate != '' && loadingTab == 1) {                
+                    @if(selectedLocationId != '' && selectedDate != '' && loadingTab == 1) {                
                         <mat-tab-group animationDuration="0ms">
                             <mat-tab label="Purchase"><app-purchase></app-purchase></mat-tab>
                             <mat-tab label="Sales"><app-sales></app-sales></mat-tab>
@@ -41,7 +41,7 @@
                         </mat-tab-group>
                     }
     
-                    @if(loadingTab == 2 && locationId != '' && selectedDate != '') { 
+                    @if(loadingTab == 2 && selectedLocationId != '' && selectedDate != '') { 
                         <mat-tab-group animationDuration="0ms">
                             <mat-tab label="Purchase">
                                 <div class="grid grid-cols-3" style="margin-top: 30px;">

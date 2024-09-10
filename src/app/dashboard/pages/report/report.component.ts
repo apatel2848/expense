@@ -106,10 +106,12 @@ export class ReportComponent implements OnInit {
   selectedYear: number = 0
   enableDownload: boolean = false
 
+  // constructor
   constructor(private _datePipe: DatePipe) { 
     this.configurationService.getLocations()
   }
 
+  // init
   ngOnInit(): void {
     this.selectedMonth = this.dateControl.value?.month() ?? 0
     this.selectedYear = this.dateControl.value?.year() ?? 0
@@ -119,6 +121,7 @@ export class ReportComponent implements OnInit {
       this.getReport(this.selectedLocationId, this.selectedMonth, this.selectedYear)
   }
 
+  // on month change
   onMonthChange(normalizedMonthAndYear: Moment, datepicker: MatDatepicker<Moment>) {
     this.selectedMonth = normalizedMonthAndYear.month()
     this.selectedYear = normalizedMonthAndYear.year()
@@ -134,6 +137,7 @@ export class ReportComponent implements OnInit {
     this.getReport(this.selectedLocationId, this.selectedMonth, this.selectedYear)
   }
 
+  // on location change
   onLocationChange(locationId: String) {
     console.log(locationId)
 
@@ -181,6 +185,7 @@ export class ReportComponent implements OnInit {
     }
   }
 
+  // get column display name
   public getColumnDisplayName(key: any)
   {
     return this.columnHeaders()[key]

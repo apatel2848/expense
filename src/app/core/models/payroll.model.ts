@@ -3,13 +3,13 @@ export class Payroll {
     date: string | undefined;
     locationId: string;
     created: Date;
-
-    expense: number;
+    
     wage: number;
     tax: number;
     workmanComp: number;
     otherExpense: number;
 
+    //expense: number;
     // maintenance: number;
     // managerHours: number;
     // percentOfTaxes: number;
@@ -22,11 +22,12 @@ export class Payroll {
     public constructor() {
         this.created = new Date()
         this.locationId = '';
-        this.expense = 0;
         this.wage = 0;
         this.otherExpense = 0;
         this.tax = 0;
         this.workmanComp = 0;
+
+        // this.expense = 0;
         // this.maintenance = 0;
         // this.managerHours = 0;
         // this.percentOfTaxes = 0;
@@ -45,12 +46,12 @@ export class Payroll {
             date: this.date,
             locationId: this.locationId,
 
-            expenses: this.expense,
-            wages: this.wage,
+            wage: this.wage,
             otherExpense: this.otherExpense,
-            taxes: this.tax,
+            tax: this.tax,
             workmanComp: this.workmanComp
 
+            //expenses: this.expense,
             // maintenance: this.maintenance,
             // managerHours: this.managerHours,
             // percentOfTaxes: this.percentOfTaxes,
