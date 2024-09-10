@@ -20,7 +20,7 @@ export class Menu {
           label: 'Reports',
           route: '/view/report',
           children: [
-            { label: 'Weekly Food Report', route: '/view/report/weekfoodreport' }
+            { label: 'Weekly Food Report', route: '/view/report/weeklyfoodreport' }
           ],
         }
       ],

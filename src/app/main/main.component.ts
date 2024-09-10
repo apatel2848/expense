@@ -23,7 +23,8 @@ export class MainComponent implements OnInit {
 
   successCallback(data: FirebaseUISignInSuccessWithAuthResult) {
     console.log('successCallback', data);
-    this.router.navigate(['view/config/location']);
+    // this.router.navigate(['view/config/location']);
+    this.router.navigate(['view/report/weeklyfoodreport']);
   }
 
   errorCallback(data: FirebaseUISignInFailure) {
