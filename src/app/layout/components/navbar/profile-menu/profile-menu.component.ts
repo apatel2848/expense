@@ -37,7 +37,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
   ],
 })
 export class ProfileMenuComponent implements OnInit {
-  public user: { name: string; email: string; } = { name: '', email: ''}
+  public user: { name: string; email: string; photoUrl: string; } = { name: '', email: '', photoUrl: ''}
   public isOpen = false;
   public profileMenu = [
     {
@@ -87,6 +87,7 @@ export class ProfileMenuComponent implements OnInit {
       if (d !== null && d !== undefined) {
         this.user.name = d.displayName || '';
         this.user.email = d.email || '';
+        this.user.photoUrl = d.photoURL || 'assets/images/man.png';
       }
     }
     );
