@@ -125,7 +125,7 @@ export class DashboardService {
         let weeksArray = [...weeks]
         const startDate = monthMoment.week(Number(weeksArray[0])).startOf('week').format('YYYY-MM-DD');
         const endDate = monthMoment.week(Number(weeksArray[weeksArray.length-1])).endOf('week').format('YYYY-MM-DD');
-        console.log(startDate + '   ...   ' + endDate)
+        console.log(startDate + '...' + endDate)
 
         const observable = forkJoin({
             purchaseData: this.db.getPurchaseByDateRange(locationId, startDate, endDate),
@@ -256,12 +256,12 @@ export class DashboardService {
                     {
                         // Payroll Wages
                         var row = reportRows['payrollWages']
-                        var payrollWage = payrollGroups[week].reduce((a: any,b: any) => a + b.wages, 0)
+                        var payrollWage = payrollGroups[week].reduce((a: any,b: any) => a + b.wage, 0)
                         row[key] = USDollar.format(payrollWage)
 
                         // Payroll Tax
                         var row = reportRows['payrollTax']
-                        var payrollTax = payrollGroups[week].reduce((a: any,b: any) => a + b.taxes, 0)
+                        var payrollTax = payrollGroups[week].reduce((a: any,b: any) => a + b.tax, 0)
                         row[key] = USDollar.format(payrollTax)
 
                         // Workman Comp
@@ -342,10 +342,12 @@ export class DashboardService {
 
     private groupedByISOWeek(collection: any[])
     {
+        console.log(moment('2024-09-16', 'YYYY-MM-DD').week())
         let groups = collection.reduce(
             (result:any, currentValue:any) => { 
-              (result[moment(currentValue['date'], 'YYYY-MM-DD').isoWeek()] = result[moment(currentValue['date'], 'YYYY-MM-DD').isoWeek()] || []).push(currentValue);
-              return result;
+                let week = moment(currentValue['date'], 'YYYY-MM-DD').week();
+                (result[week] = result[week] || []).push(currentValue);
+                return result;
             }, {});
         return groups
     }
